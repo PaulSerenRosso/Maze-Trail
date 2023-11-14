@@ -14,7 +14,7 @@ public class MazeManager : MonoBehaviour
     [SerializeField] private GameObject wallPrefab;
     [SerializeField] private GameObject wallsParent;
     [SerializeField] private List<CellMaze> recursivePathCells = new();
-    
+
     [SerializeField] private SerializableDictionary<RailShape, GameObject> rails;
 
     private float cellSize;
@@ -25,7 +25,6 @@ public class MazeManager : MonoBehaviour
         GenerateGridMaze();
         var cell = cells[Random.Range(0, totalCells)];
         StartCoroutine(CreatePath(cell));
-        // GenerateRails();
     }
 
     private void GenerateGridMaze()
@@ -115,6 +114,7 @@ public class MazeManager : MonoBehaviour
 
         if (recursivePathCells.Count == 0)
         {
+            StartCoroutine(GenerateRails());
             return;
         }
 
@@ -178,8 +178,8 @@ public class MazeManager : MonoBehaviour
             }
         }
     }
-    
-    private void GenerateRails()
+
+    private IEnumerator GenerateRails()
     {
         foreach (var cell in cells)
         {
@@ -192,7 +192,9 @@ public class MazeManager : MonoBehaviour
                     {
                         rail.transform.Rotate(Vector3.up, 90);
                     }
+
                     break;
+
                 case RailShape.ShapeL:
                     var directions = new List<Direction>();
                     foreach (var wall in cell.walls)
@@ -203,19 +205,23 @@ public class MazeManager : MonoBehaviour
                         }
                     }
 
-                    if (directions[0] == Direction.Left && directions[1] == Direction.Top)
-                    {
-                        rail.transform.Rotate(Vector3.up, 180);
-                    }
-                    if (directions[0] == Direction.Top && directions[1] == Direction.Right)
+                    if (directions[0] == Direction.Left && directions[1] == Direction.Top || directions[0] == Direction.Top && directions[1] == Direction.Left)
                     {
                         rail.transform.Rotate(Vector3.up, 90);
                     }
-                    if (directions[0] == Direction.Bottom && directions[1] == Direction.Left)
+
+                    if (directions[0] == Direction.Top && directions[1] == Direction.Right || directions[0] == Direction.Right && directions[1] == Direction.Top)
+                    {
+                        rail.transform.Rotate(Vector3.up, 180);
+                    }
+
+                    if (directions[0] == Direction.Bottom && directions[1] == Direction.Right || directions[0] == Direction.Right && directions[1] == Direction.Bottom)
                     {
                         rail.transform.Rotate(Vector3.up, -90);
                     }
+
                     break;
+
                 case RailShape.ShapeT:
                     foreach (var wall in cell.walls)
                     {
@@ -224,18 +230,20 @@ public class MazeManager : MonoBehaviour
                             switch (wall.Key)
                             {
                                 case Direction.Right:
-                                    rail.transform.Rotate(Vector3.up, -90);
+                                    rail.transform.Rotate(Vector3.up, 90);
                                     break;
                                 case Direction.Bottom:
                                     rail.transform.Rotate(Vector3.up, 180);
                                     break;
                                 case Direction.Left:
-                                    rail.transform.Rotate(Vector3.up, 90);
+                                    rail.transform.Rotate(Vector3.up, -90);
                                     break;
                             }
                         }
                     }
+
                     break;
+
                 case RailShape.ShapeU:
                     foreach (var wall in cell.walls)
                     {
@@ -255,10 +263,14 @@ public class MazeManager : MonoBehaviour
                             }
                         }
                     }
+
                     break;
+
                 case RailShape.ShapeX:
                     break;
             }
+
+            yield return new WaitForSeconds(0.2f);
         }
     }
 }

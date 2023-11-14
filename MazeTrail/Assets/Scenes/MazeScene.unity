@@ -300,7 +300,22 @@ MonoBehaviour:
   wallsParent: {fileID: 1814878509}
   recursivePathCells: []
   rails:
-    list: []
+    list:
+    - Key: 0
+      Value: {fileID: 4374454467857425836, guid: 0cdf73334ef42234db0c4e504b73bda6,
+        type: 3}
+    - Key: 1
+      Value: {fileID: 7595626736291811087, guid: 92edfc4dd9dc6fc4b872e715c71b0ec0,
+        type: 3}
+    - Key: 2
+      Value: {fileID: 7118041243459883276, guid: 3669139c55243f947b80395b29dc7345,
+        type: 3}
+    - Key: 3
+      Value: {fileID: 1177307845590590574, guid: 18863c7cf961b8741a32656a9109d634,
+        type: 3}
+    - Key: 4
+      Value: {fileID: 6649998555982330340, guid: d2632a0173bcba645b11e4551e4fa8df,
+        type: 3}
 --- !u!4 &871028639
 Transform:
   m_ObjectHideFlags: 0
@@ -545,79 +560,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1001 &4904704349506108274
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 3616061899496245896, guid: e4df5eaa974d7a34293e68996ff9e13e,
-        type: 3}
-      propertyPath: m_Name
-      value: Floor Plane
-      objectReference: {fileID: 0}
-    - target: {fileID: 3616061899496245896, guid: e4df5eaa974d7a34293e68996ff9e13e,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4685340436714134388, guid: e4df5eaa974d7a34293e68996ff9e13e,
-        type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4685340436714134388, guid: e4df5eaa974d7a34293e68996ff9e13e,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4685340436714134388, guid: e4df5eaa974d7a34293e68996ff9e13e,
-        type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4685340436714134388, guid: e4df5eaa974d7a34293e68996ff9e13e,
-        type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4685340436714134388, guid: e4df5eaa974d7a34293e68996ff9e13e,
-        type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4685340436714134388, guid: e4df5eaa974d7a34293e68996ff9e13e,
-        type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4685340436714134388, guid: e4df5eaa974d7a34293e68996ff9e13e,
-        type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4685340436714134388, guid: e4df5eaa974d7a34293e68996ff9e13e,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4685340436714134388, guid: e4df5eaa974d7a34293e68996ff9e13e,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4685340436714134388, guid: e4df5eaa974d7a34293e68996ff9e13e,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: e4df5eaa974d7a34293e68996ff9e13e, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -625,7 +567,6 @@ SceneRoots:
   - {fileID: 125359910}
   - {fileID: 1416050318}
   - {fileID: 1109294271}
-  - {fileID: 4904704349506108274}
   - {fileID: 871028639}
   - {fileID: 1095001296}
   - {fileID: 1814878510}

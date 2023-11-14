@@ -1,11 +1,4 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Numerics;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.InputSystem;
-using Quaternion = UnityEngine.Quaternion;
 using Vector3 = UnityEngine.Vector3;
 
 public class CharacterController : MonoBehaviour
@@ -13,15 +6,15 @@ public class CharacterController : MonoBehaviour
     [SerializeField] private float acceleration;
     [SerializeField] private float maxSpeed;
     [SerializeField] private float breakForce;
-    
+
     private Rigidbody rb;
     private Vector3 direction = Vector3.forward;
     private Vector3 orientation = Vector3.forward;
 
     private bool accelerated = false;
-    
+
     private PlayerInput inputSystem;
-    
+
     void Awake()
     {
         rb = GetComponent<Rigidbody>();
@@ -46,33 +39,32 @@ public class CharacterController : MonoBehaviour
         {
             rb.AddForce(acceleration * direction, ForceMode.Acceleration);
         }
+
         if (inputSystem.Player.Backward.IsPressed())
         {
             rb.AddForce(-breakForce * direction, ForceMode.Acceleration);
         }
-        
     }
 
     private void MovePlayer()
     {
         //If speed is opposite to forward, set it to 0
-        if(rb.velocity.normalized == -transform.forward)
+        if (rb.velocity.normalized == -transform.forward)
             rb.velocity = Vector3.zero;
-        
+
         //If wagon is accelerated : 
         //If speed went below maximum base speed, remove accelerated state
         //Else, make wagon decelerate each frame
         //If not accelerated, cap speed at topSpeed
         if (accelerated)
         {
-            if(rb.velocity.magnitude < maxSpeed)
+            if (rb.velocity.magnitude < maxSpeed)
                 accelerated = false;
             else
                 rb.AddForce(-.05f * transform.forward, ForceMode.Acceleration);
         }
-        else if (rb.velocity.magnitude > maxSpeed) 
+        else if (rb.velocity.magnitude > maxSpeed)
             rb.velocity = rb.velocity.normalized * maxSpeed;
-            
     }
 
     private void GetNextDirection(Intersection intersection)
@@ -105,14 +97,15 @@ public class CharacterController : MonoBehaviour
         rb.velocity += transform.forward * value;
         accelerated = true;
     }
-    
+
     private void OnTriggerEnter(Collider other)
     {
-        var intersection = other.GetComponent<Intersection>(); 
+        var intersection = other.GetComponent<Intersection>();
         if (intersection)
         {
             GetNextDirection(intersection);
-            transform.position = new Vector3(other.transform.position.x, transform.position.y, other.transform.position.z);
+            transform.position =
+                new Vector3(other.transform.position.x, transform.position.y, other.transform.position.z);
         }
     }
 }
