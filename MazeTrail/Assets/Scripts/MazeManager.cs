@@ -14,6 +14,8 @@ public class MazeManager : MonoBehaviour
     [SerializeField] private GameObject wallPrefab;
     [SerializeField] private GameObject wallsParent;
     [SerializeField] private List<CellMaze> recursivePathCells = new();
+    
+    [SerializeField] private SerializableDictionary<RailShape, GameObject> rails;
 
     private float cellSize;
     private int totalCells;
@@ -23,6 +25,7 @@ public class MazeManager : MonoBehaviour
         GenerateGridMaze();
         var cell = cells[Random.Range(0, totalCells)];
         StartCoroutine(CreatePath(cell));
+        // GenerateRails();
     }
 
     private void GenerateGridMaze()
@@ -43,32 +46,32 @@ public class MazeManager : MonoBehaviour
                 if (y == 0)
                 {
                     var bottomWall = GenerateWall(x, y, Direction.Bottom);
-                    cell.AddWall(bottomWall, Direction.Bottom);
+                    cell.walls.Add(Direction.Bottom, bottomWall);
                 }
                 else
                 {
                     cells[(y - 1) * xSize + x].AddNeighbour(Direction.Top, cell);
                     cell.AddNeighbour(Direction.Bottom, cells[(y - 1) * xSize + x]);
-                    cell.AddWall(cells[(y - 1) * xSize + x].GetWall(Direction.Top), Direction.Bottom);
+                    cell.walls.Add(Direction.Bottom, cells[(y - 1) * xSize + x].walls[Direction.Top]);
                 }
 
                 if (x == 0)
                 {
                     var leftWall = GenerateWall(x, y, Direction.Left);
-                    cell.AddWall(leftWall, Direction.Left);
+                    cell.walls.Add(Direction.Left, leftWall);
                 }
                 else
                 {
                     cells[(y * xSize) + x - 1].AddNeighbour(Direction.Right, cell);
                     cell.AddNeighbour(Direction.Left, cells[(y * xSize) + x - 1]);
-                    cell.AddWall(cells[(y * xSize) + x - 1].GetWall(Direction.Right), Direction.Left);
+                    cell.walls.Add(Direction.Left, cells[(y * xSize) + x - 1].walls[Direction.Right]);
                 }
 
                 var rightWall = GenerateWall(x, y, Direction.Right);
-                cell.AddWall(rightWall, Direction.Right);
+                cell.walls.Add(Direction.Right, rightWall);
 
                 var topWall = GenerateWall(x, y, Direction.Top);
-                cell.AddWall(topWall, Direction.Top);
+                cell.walls.Add(Direction.Top, topWall);
 
                 cells.Add(cell);
             }
@@ -133,8 +136,9 @@ public class MazeManager : MonoBehaviour
         cell.floorMR.material.color = Color.white;
         var neighbourCellTuple = cell.DynamicNeighbours[Random.Range(0, cell.DynamicNeighbours.Count)];
 
-        cell.DestroyWall(neighbourCellTuple.direction);
-        neighbourCellTuple.cell.RemoveWall(GetOppositeDirection(neighbourCellTuple.direction));
+        Destroy(cell.walls[neighbourCellTuple.direction]);
+        cell.walls[neighbourCellTuple.direction] = null;
+        neighbourCellTuple.cell.walls[GetOppositeDirection(neighbourCellTuple.direction)] = null;
         foreach (var neighbour in cell.DynamicNeighbours)
         {
             neighbour.cell.RemoveDynamicNeighbour(cell);
@@ -142,7 +146,7 @@ public class MazeManager : MonoBehaviour
 
         cell.DynamicNeighbours.Remove(neighbourCellTuple);
         recursivePathCells.Add(cell);
-        yield return new WaitForSeconds(1);
+        yield return new WaitForSeconds(0.2f);
         RecursivePathMaze(neighbourCellTuple.cell);
     }
 
@@ -171,6 +175,89 @@ public class MazeManager : MonoBehaviour
             {
                 if (neighbour.cell.DynamicNeighbours[i].cell != cell) continue;
                 neighbour.cell.DynamicNeighbours.RemoveAt(i);
+            }
+        }
+    }
+    
+    private void GenerateRails()
+    {
+        foreach (var cell in cells)
+        {
+            var shape = cell.GetRailShape();
+            var rail = Instantiate(rails[shape], cell.transform.position, Quaternion.identity, cell.transform);
+            switch (shape)
+            {
+                case RailShape.ShapeI:
+                    if (cell.walls[Direction.Top])
+                    {
+                        rail.transform.Rotate(Vector3.up, 90);
+                    }
+                    break;
+                case RailShape.ShapeL:
+                    var directions = new List<Direction>();
+                    foreach (var wall in cell.walls)
+                    {
+                        if (!wall.Value)
+                        {
+                            directions.Add(wall.Key);
+                        }
+                    }
+
+                    if (directions[0] == Direction.Left && directions[1] == Direction.Top)
+                    {
+                        rail.transform.Rotate(Vector3.up, 180);
+                    }
+                    if (directions[0] == Direction.Top && directions[1] == Direction.Right)
+                    {
+                        rail.transform.Rotate(Vector3.up, 90);
+                    }
+                    if (directions[0] == Direction.Bottom && directions[1] == Direction.Left)
+                    {
+                        rail.transform.Rotate(Vector3.up, -90);
+                    }
+                    break;
+                case RailShape.ShapeT:
+                    foreach (var wall in cell.walls)
+                    {
+                        if (wall.Value)
+                        {
+                            switch (wall.Key)
+                            {
+                                case Direction.Right:
+                                    rail.transform.Rotate(Vector3.up, -90);
+                                    break;
+                                case Direction.Bottom:
+                                    rail.transform.Rotate(Vector3.up, 180);
+                                    break;
+                                case Direction.Left:
+                                    rail.transform.Rotate(Vector3.up, 90);
+                                    break;
+                            }
+                        }
+                    }
+                    break;
+                case RailShape.ShapeU:
+                    foreach (var wall in cell.walls)
+                    {
+                        if (!wall.Value)
+                        {
+                            switch (wall.Key)
+                            {
+                                case Direction.Right:
+                                    rail.transform.Rotate(Vector3.up, 90);
+                                    break;
+                                case Direction.Bottom:
+                                    rail.transform.Rotate(Vector3.up, 180);
+                                    break;
+                                case Direction.Left:
+                                    rail.transform.Rotate(Vector3.up, -90);
+                                    break;
+                            }
+                        }
+                    }
+                    break;
+                case RailShape.ShapeX:
+                    break;
             }
         }
     }

@@ -8,90 +8,36 @@ public class CellMaze : MonoBehaviour
     public List<Neighbour> DynamicNeighbours = new();
     public List<Neighbour> StaticNeighbours = new();
     public MeshRenderer floorMR;
+    public SerializableDictionary<Direction, GameObject> walls = new();
 
-    [SerializeField] private GameObject leftWall;
-    [SerializeField] private GameObject rightWall;
-    [SerializeField] private GameObject topWall;
-    [SerializeField] private GameObject bottomWall;
-
-    public void AddWall(GameObject wall, Direction direction)
+    public RailShape GetRailShape()
     {
-        switch (direction)
+        var count = 0;
+        foreach (var wall in walls)
         {
-            case Direction.Top:
-                topWall = wall;
-                break;
-            case Direction.Right:
-                rightWall = wall;
-                break;
-            case Direction.Bottom:
-                bottomWall = wall;
-                break;
-            case Direction.Left:
-                leftWall = wall;
-                break;
+            if (wall.Value)
+            {
+                count++;
+            }
         }
-    }
 
-    public GameObject GetWall(Direction direction)
-    {
-        switch (direction)
+        switch (count)
         {
-            case Direction.Top:
-                return topWall;
-            case Direction.Right:
-                return rightWall;
-            case Direction.Bottom:
-                return bottomWall;
-            case Direction.Left:
-                return rightWall;
+            case 0:
+                return RailShape.ShapeX;
+            case 1:
+                return RailShape.ShapeT;
+            case 2:
+                if (walls[Direction.Top] && walls[Direction.Bottom] || walls[Direction.Left] && walls[Direction.Right])
+                    return RailShape.ShapeI;
+                return RailShape.ShapeL;
+            case 3:
+                return RailShape.ShapeU;
             default:
                 throw new Exception();
         }
     }
-
-    public void RemoveWall(Direction direction)
-    {
-        switch (direction)
-        {
-            case Direction.Top:
-                topWall = null;
-                break;
-            case Direction.Right:
-                rightWall = null;
-                break;
-            case Direction.Bottom:
-                bottomWall = null;
-                break;
-            case Direction.Left:
-                leftWall = null;
-                break;
-        }
-    }
-
-    public void DestroyWall(Direction direction)
-    {
-        switch (direction)
-        {
-            case Direction.Top:
-                Destroy(topWall);
-                topWall = null;
-                break;
-            case Direction.Right:
-                Destroy(rightWall);
-                rightWall = null;
-                break;
-            case Direction.Bottom:
-                Destroy(bottomWall);
-                bottomWall = null;
-                break;
-            case Direction.Left:
-                Destroy(leftWall);
-                leftWall = null;
-                break;
-        }
-    }
-
+    
     public void AddNeighbour(Direction direction, CellMaze cell)
     {
         DynamicNeighbours.Add(new Neighbour(direction, cell));

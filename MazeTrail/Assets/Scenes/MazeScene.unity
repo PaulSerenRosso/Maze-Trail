@@ -298,6 +298,9 @@ MonoBehaviour:
   wallPrefab: {fileID: 6660272913021087301, guid: 4697daf02a6c4bd429d1342ad88f6a9a,
     type: 3}
   wallsParent: {fileID: 1814878509}
+  recursivePathCells: []
+  rails:
+    list: []
 --- !u!4 &871028639
 Transform:
   m_ObjectHideFlags: 0
