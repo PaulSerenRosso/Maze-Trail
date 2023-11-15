@@ -11,10 +11,13 @@ public class MazeManager : MonoBehaviour
     [SerializeField] private List<CellMaze> cells;
     [SerializeField] private CellMaze cellPrefab;
     [SerializeField] private GameObject cellsParent;
-    [SerializeField] private GameObject wallPrefab;
+    [SerializeField] private WallCell wallPrefab;
     [SerializeField] private GameObject wallsParent;
     [SerializeField] private List<CellMaze> recursivePathCells = new();
     [SerializeField] private SerializableDictionary<RailShape, GameObject> rails;
+
+    [SerializeField] private int maxLoopSize = 5;
+    [SerializeField] private int minLoopSize = 1;
 
     private float cellSize;
     private int totalCells;
@@ -28,7 +31,7 @@ public class MazeManager : MonoBehaviour
 
     private void GenerateGridMaze()
     {
-        cellSize = cellPrefab.transform.localScale.x;
+        cellSize = cellPrefab.floor.transform.localScale.x;
         totalCells = xSize * ySize;
 
         for (int y = 0; y < ySize; y++)
@@ -44,6 +47,7 @@ public class MazeManager : MonoBehaviour
                 if (y == 0)
                 {
                     var bottomWall = GenerateWall(x, y, Direction.Bottom);
+                    bottomWall.isClosingWall = true;
                     cell.walls.Add(Direction.Bottom, bottomWall);
                 }
                 else
@@ -56,6 +60,7 @@ public class MazeManager : MonoBehaviour
                 if (x == 0)
                 {
                     var leftWall = GenerateWall(x, y, Direction.Left);
+                    leftWall.isClosingWall = true;
                     cell.walls.Add(Direction.Left, leftWall);
                 }
                 else
@@ -67,16 +72,18 @@ public class MazeManager : MonoBehaviour
 
                 var rightWall = GenerateWall(x, y, Direction.Right);
                 cell.walls.Add(Direction.Right, rightWall);
+                if (x == xSize - 1) rightWall.isClosingWall = true;
 
                 var topWall = GenerateWall(x, y, Direction.Top);
                 cell.walls.Add(Direction.Top, topWall);
+                if (y == ySize - 1) topWall.isClosingWall = true;
 
                 cells.Add(cell);
             }
         }
     }
 
-    private GameObject GenerateWall(int x, int y, Direction direction)
+    private WallCell GenerateWall(int x, int y, Direction direction)
     {
         var wall = Instantiate(wallPrefab, wallsParent.transform);
         wall.transform.localScale = new Vector3(cellSize, wall.transform.localScale.y,
@@ -113,7 +120,7 @@ public class MazeManager : MonoBehaviour
 
         if (recursivePathCells.Count == 0)
         {
-            StartCoroutine(GenerateRails());
+            StartCoroutine(GenerateCycle());
             return;
         }
 
@@ -135,7 +142,7 @@ public class MazeManager : MonoBehaviour
         cell.floorMR.material.color = Color.white;
         var neighbourCellTuple = cell.DynamicNeighbours[Random.Range(0, cell.DynamicNeighbours.Count)];
 
-        Destroy(cell.walls[neighbourCellTuple.direction]);
+        Destroy(cell.walls[neighbourCellTuple.direction].gameObject);
         cell.walls[neighbourCellTuple.direction] = null;
         neighbourCellTuple.cell.walls[GetOppositeDirection(neighbourCellTuple.direction)] = null;
         foreach (var neighbour in cell.DynamicNeighbours)
@@ -147,6 +154,107 @@ public class MazeManager : MonoBehaviour
         recursivePathCells.Add(cell);
         yield return new WaitForSeconds(0.2f);
         RecursivePathMaze(neighbourCellTuple.cell);
+    }
+
+    private IEnumerator GenerateCycle()
+    {
+        var cellsU = new List<CellMaze>();
+        var currentMaxLoopSize = maxLoopSize;
+        var currentMinLoopSize = maxLoopSize;
+        foreach (var cell in cells)
+        {
+            var isValid = true;
+            if (cell.GetRailShape() != RailShape.ShapeU) continue;
+            foreach (var wall in cell.walls)
+            {
+                if (wall.Value == null)
+                {
+                    if (cell.walls[GetOppositeDirection(wall.Key)].isClosingWall)
+                    {
+                        isValid = false;
+                    }
+                    break;
+                }
+            }
+            if (!isValid) continue; 
+            cellsU.Add(cell);
+        }
+
+        if (cellsU.Count < maxLoopSize)
+        {
+            currentMaxLoopSize = cellsU.Count;
+        }
+
+        if (cellsU.Count < minLoopSize)
+        {
+            currentMinLoopSize = cellsU.Count;
+        }
+
+        var randomCount = Random.Range(currentMinLoopSize, currentMaxLoopSize);
+        cellsU.Shuffle();
+
+        var oppositeDirection = Direction.Bottom;
+        for (int i = 0; i < randomCount; i++)
+        {
+            foreach (var wall in cellsU[i].walls)
+            {
+                if (wall.Value == null)
+                {
+                    oppositeDirection = GetOppositeDirection(wall.Key);
+                    break;
+                }
+            }
+            
+            Destroy(cellsU[i].walls[oppositeDirection].gameObject);
+            cellsU[i].walls[oppositeDirection] = null;
+            var neighbourCell = cellsU[i].GetNeighbourStatic(oppositeDirection);
+            neighbourCell.walls[GetOppositeDirection(oppositeDirection)] = null;
+            yield return new WaitForSeconds(1.0f);
+        }
+
+        StartCoroutine(GenerateEntries());
+    }
+
+    private IEnumerator GenerateEntries()
+    {
+        var randomEntry = (Direction)Random.Range(0, 4);
+        var randomExit = GetOppositeDirection(randomEntry);
+
+        CreateEntry(randomEntry);
+        yield return new WaitForSeconds(1.0f);
+        CreateEntry(randomExit);
+        yield return new WaitForSeconds(1.0f);
+        
+        StartCoroutine(GenerateRails());
+    }
+
+    private void CreateEntry(Direction randomEntry)
+    {
+        var randomX = Random.Range(0, xSize);
+        var randomY = Random.Range(0, ySize);
+        int index;
+        switch (randomEntry)
+        {
+            case Direction.Top:
+                index = ((ySize - 1) * xSize) + randomX;
+                Destroy(cells[index].walls[Direction.Top].gameObject);
+                cells[index].walls[Direction.Top] = null;
+                break;
+            case Direction.Right:
+                index = (randomY) * xSize + xSize - 1;
+                Destroy(cells[index].walls[Direction.Right].gameObject);
+                cells[index].walls[Direction.Right] = null;
+                break;
+            case Direction.Bottom:
+                Destroy(cells[randomX].walls[Direction.Bottom].gameObject);
+                cells[randomX].walls[Direction.Bottom] = null;
+                break;
+            case Direction.Left:
+                index = (randomY) * xSize;
+                Destroy(cells[index].walls[Direction.Left].gameObject);
+                cells[index].walls[Direction.Left] = null;
+                break;
+        }
     }
 
     private IEnumerator GenerateRails()

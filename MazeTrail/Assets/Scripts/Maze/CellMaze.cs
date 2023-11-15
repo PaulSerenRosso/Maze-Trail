@@ -7,8 +7,9 @@ public class CellMaze : MonoBehaviour
 {
     public List<Neighbour> DynamicNeighbours = new();
     public List<Neighbour> StaticNeighbours = new();
+    public GameObject floor;
     public MeshRenderer floorMR;
-    public SerializableDictionary<Direction, GameObject> walls = new();
+    public SerializableDictionary<Direction, WallCell> walls = new();
 
     public RailShape GetRailShape()
     {
@@ -53,9 +54,20 @@ public class CellMaze : MonoBehaviour
         }
     }
 
-    public CellMaze GetNeighbour(Direction direction)
+    public CellMaze GetNeighbourDynamic(Direction direction)
     {
         foreach (var neighbour in DynamicNeighbours)
+        {
+            if (neighbour.direction != direction) continue;
+            return neighbour.cell;
+        }
+
+        throw new Exception();
+    }
+    
+    public CellMaze GetNeighbourStatic(Direction direction)
+    {
+        foreach (var neighbour in StaticNeighbours)
         {
             if (neighbour.direction != direction) continue;
             return neighbour.cell;

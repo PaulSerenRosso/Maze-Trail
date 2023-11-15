@@ -210,7 +210,7 @@ Transform:
   m_GameObject: {fileID: 125359907}
   serializedVersion: 2
   m_LocalRotation: {x: 0.6427876, y: 0, z: 0, w: 0.7660445}
-  m_LocalPosition: {x: 0, y: 20, z: 0}
+  m_LocalPosition: {x: 10, y: 20, z: 5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -295,7 +295,7 @@ MonoBehaviour:
   cellPrefab: {fileID: -6096657254893704654, guid: 8123936067865504e949f13d24a3535f,
     type: 3}
   cellsParent: {fileID: 1095001295}
-  wallPrefab: {fileID: 6660272913021087301, guid: 4697daf02a6c4bd429d1342ad88f6a9a,
+  wallPrefab: {fileID: 3256221407044834780, guid: 4697daf02a6c4bd429d1342ad88f6a9a,
     type: 3}
   wallsParent: {fileID: 1814878509}
   recursivePathCells: []
@@ -316,6 +316,8 @@ MonoBehaviour:
     - Key: 4
       Value: {fileID: 6649998555982330340, guid: d2632a0173bcba645b11e4551e4fa8df,
         type: 3}
+  maxLoopSize: 5
+  minLoopSize: 1
 --- !u!4 &871028639
 Transform:
   m_ObjectHideFlags: 0
