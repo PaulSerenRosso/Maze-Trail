@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 using Vector3 = UnityEngine.Vector3;
 
@@ -10,7 +9,6 @@ public class CharacterController : MonoBehaviour
 
     private Rigidbody rb;
     private Vector3 direction = Vector3.forward;
-    private Vector3 orientation = Vector3.forward;
 
     private Direction nextDirection = Direction.Top;
     
@@ -27,15 +25,16 @@ public class CharacterController : MonoBehaviour
 
     private void OnEnable()
     {
-        inputSystem.Player.Accelerate.Enable();
-        inputSystem.Player.Decelerate.Enable();
-        inputSystem.Player.Forward.Enable();
-        inputSystem.Player.Backward.Enable();
-        inputSystem.Player.TurnLeft.Enable();
-        inputSystem.Player.TurnRight.Enable();
-        inputSystem.Player.TurnAround.Enable();
+        inputSystem.Player.Enable();
     }
 
+    public void Init(Vector3 startDirection)
+    {
+        Debug.Log($"Init: {startDirection}");
+        direction = startDirection;
+        nextDirection = DirectionLogic.GetRelativeDirection(startDirection);
+    }
+    
     void Update()
     {
         GetInput();

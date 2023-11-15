@@ -15,11 +15,13 @@ public class MazeManager : MonoBehaviour
     [SerializeField] private GameObject wallsParent;
     [SerializeField] private List<CellMaze> recursivePathCells = new();
     [SerializeField] private SerializableDictionary<RailShape, GameObject> rails;
-
     [SerializeField] private int maxLoopSize = 5;
     [SerializeField] private int minLoopSize = 1;
-
     [SerializeField] private int numberOfCellsEntries = 3;
+    [SerializeField] private Intersection intersectionPrefab;
+    [SerializeField] private CharacterController characterControllerPrefab;
+    [SerializeField] private CameraController cameraController;
+    [SerializeField] private float timer = 0.01f;
 
     private float cellSize;
     private int totalCells;
@@ -155,7 +157,7 @@ public class MazeManager : MonoBehaviour
 
         cell.DynamicNeighbours.Remove(neighbourCellTuple);
         recursivePathCells.Add(cell);
-        yield return new WaitForSeconds(0.2f);
+        yield return new WaitForSeconds(timer);
         RecursivePathMaze(neighbourCellTuple.cell);
     }
 
@@ -232,7 +234,7 @@ public class MazeManager : MonoBehaviour
             var neighbourCell = cellsU[i].GetNeighbourStatic(oppositeDirection);
             AddInterpolatedRails(cellsU[i].transform.position, neighbourCell.transform.position);
             neighbourCell.walls[GetOppositeDirection(oppositeDirection)] = null;
-            yield return new WaitForSeconds(1.0f);
+            yield return new WaitForSeconds(timer);
         }
         
         StartCoroutine(GenerateRails());
@@ -244,9 +246,9 @@ public class MazeManager : MonoBehaviour
         var randomExit = GetOppositeDirection(randomEntry);
 
         CreateEntry(randomEntry);
-        yield return new WaitForSeconds(1.0f);
+        yield return new WaitForSeconds(timer);
         CreateEntry(randomExit);
-        yield return new WaitForSeconds(1.0f);
+        yield return new WaitForSeconds(timer);
         
         
         var cell = cells[Random.Range(0, totalCells)];
@@ -321,6 +323,7 @@ public class MazeManager : MonoBehaviour
 
     private IEnumerator GenerateRails()
     {
+        Intersection intersection = null;
         foreach (var cell in cells)
         {
             var shape = cell.GetRailShape();
@@ -337,6 +340,7 @@ public class MazeManager : MonoBehaviour
 
                 case RailShape.ShapeL:
                     var directions = new List<Direction>();
+                    intersection = Instantiate(intersectionPrefab, cell.transform.position, Quaternion.identity, cell.transform);
                     foreach (var wall in cell.walls)
                     {
                         if (!wall.Value)
@@ -349,23 +353,34 @@ public class MazeManager : MonoBehaviour
                         directions[0] == Direction.Top && directions[1] == Direction.Left)
                     {
                         rail.transform.Rotate(Vector3.up, 90);
+                     
+                        intersection.availableDirections.Add(Direction.Left);
+                        intersection.availableDirections.Add(Direction.Top);
                     }
-
-                    if (directions[0] == Direction.Top && directions[1] == Direction.Right ||
+                    else if (directions[0] == Direction.Top && directions[1] == Direction.Right ||
                         directions[0] == Direction.Right && directions[1] == Direction.Top)
                     {
                         rail.transform.Rotate(Vector3.up, 180);
+                        intersection.availableDirections.Add(Direction.Right);
+                        intersection.availableDirections.Add(Direction.Top);
                     }
-
-                    if (directions[0] == Direction.Bottom && directions[1] == Direction.Right ||
+                    else if (directions[0] == Direction.Bottom && directions[1] == Direction.Right ||
                         directions[0] == Direction.Right && directions[1] == Direction.Bottom)
                     {
                         rail.transform.Rotate(Vector3.up, -90);
+                        intersection.availableDirections.Add(Direction.Right);
+                        intersection.availableDirections.Add(Direction.Bottom);
+                    }
+                    else
+                    {
+                        intersection.availableDirections.Add(Direction.Left);
+                        intersection.availableDirections.Add(Direction.Bottom);
                     }
 
                     break;
 
                 case RailShape.ShapeT:
+                    intersection = Instantiate(intersectionPrefab, cell.transform.position, Quaternion.identity, cell.transform);
                     foreach (var wall in cell.walls)
                     {
                         if (wall.Value)
@@ -374,12 +389,26 @@ public class MazeManager : MonoBehaviour
                             {
                                 case Direction.Right:
                                     rail.transform.Rotate(Vector3.up, 90);
+                                    intersection.availableDirections.Add(Direction.Top);
+                                    intersection.availableDirections.Add(Direction.Bottom);
+                                    intersection.availableDirections.Add(Direction.Left);
                                     break;
                                 case Direction.Bottom:
                                     rail.transform.Rotate(Vector3.up, 180);
+                                    intersection.availableDirections.Add(Direction.Right);
+                                    intersection.availableDirections.Add(Direction.Top);
+                                    intersection.availableDirections.Add(Direction.Left);
                                     break;
                                 case Direction.Left:
                                     rail.transform.Rotate(Vector3.up, -90);
+                                    intersection.availableDirections.Add(Direction.Top);
+                                    intersection.availableDirections.Add(Direction.Bottom);
+                                    intersection.availableDirections.Add(Direction.Right);
+                                    break;
+                                default:
+                                    intersection.availableDirections.Add(Direction.Right);
+                                    intersection.availableDirections.Add(Direction.Bottom);
+                                    intersection.availableDirections.Add(Direction.Left);
                                     break;
                             }
                         }
@@ -410,13 +439,28 @@ public class MazeManager : MonoBehaviour
                     break;
 
                 case RailShape.ShapeX:
+                    intersection = Instantiate(intersectionPrefab, cell.transform.position, Quaternion.identity, cell.transform);
+                    intersection.availableDirections.Add(Direction.Right);
+                    intersection.availableDirections.Add(Direction.Bottom);
+                    intersection.availableDirections.Add(Direction.Left);
+                    intersection.availableDirections.Add(Direction.Top);
                     break;
             }
 
-            yield return new WaitForSeconds(0.2f);
+            yield return new WaitForSeconds(timer);
         }
+        
+        CreatePlayer();
     }
-    
+
+    private void CreatePlayer()
+    {
+        var direction = (cells[^2].transform.position - cells[^1].transform.position).normalized;
+        var characterController = Instantiate(characterControllerPrefab, cells[^2].transform.position, Quaternion.LookRotation(direction));
+        characterController.Init(direction);
+        cameraController.Initialize(characterController.transform);
+    }
+
     private void AddInterpolatedRails(Vector3 pos, Vector3 pos2)
     {
         var direction = (pos2-pos).normalized;

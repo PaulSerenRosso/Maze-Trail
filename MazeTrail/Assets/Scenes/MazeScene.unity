@@ -135,6 +135,7 @@ GameObject:
   - component: {fileID: 125359909}
   - component: {fileID: 125359908}
   - component: {fileID: 125359911}
+  - component: {fileID: 125359912}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -210,7 +211,7 @@ Transform:
   m_GameObject: {fileID: 125359907}
   serializedVersion: 2
   m_LocalRotation: {x: 0.6427876, y: 0, z: 0, w: 0.7660445}
-  m_LocalPosition: {x: 10, y: 20, z: 5}
+  m_LocalPosition: {x: 17.5, y: 50, z: 12.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -260,6 +261,20 @@ MonoBehaviour:
     mipBias: 0
     varianceClampScale: 0.9
     contrastAdaptiveSharpening: 0
+--- !u!114 &125359912
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 125359907}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 40489d904be7c7a47add8fa9be9e9a3d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  target: {fileID: 0}
+  offset: -3.5
 --- !u!1 &871028637
 GameObject:
   m_ObjectHideFlags: 0
@@ -318,6 +333,12 @@ MonoBehaviour:
         type: 3}
   maxLoopSize: 5
   minLoopSize: 1
+  numberOfCellsEntries: 3
+  intersectionPrefab: {fileID: 3405479410539138854, guid: 011af2a878e0e874a9bc187c67b13cde,
+    type: 3}
+  characterControllerPrefab: {fileID: 7305234246351051129, guid: 6436c56cf8b26fb4eac1be583eae6b9b,
+    type: 3}
+  cameraController: {fileID: 125359912}
 --- !u!4 &871028639
 Transform:
   m_ObjectHideFlags: 0
@@ -326,7 +347,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 871028637}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0

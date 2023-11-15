@@ -3,9 +3,13 @@ using UnityEngine;
 public class CameraController : MonoBehaviour
 {
     [SerializeField] private Transform target;
-
     [SerializeField] private float offset;
 
+    public void Initialize(Transform targetToFollow)
+    {
+        target = targetToFollow;
+    }
+    
     void Update()
     {
         if (!target) return;

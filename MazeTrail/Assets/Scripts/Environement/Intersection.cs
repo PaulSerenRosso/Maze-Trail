@@ -1,14 +1,15 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class Intersection : MonoBehaviour
 {
-    public List<Direction> availableDirection = new List<Direction>();
+    [FormerlySerializedAs("availableDirection")] public List<Direction> availableDirections = new List<Direction>();
 
     public bool MatchDirection(Direction playerDirection)
     {
-        return availableDirection.Contains(playerDirection);  
+        return availableDirections.Contains(playerDirection);  
     }
     
     
