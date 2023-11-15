@@ -14,7 +14,6 @@ public class MazeManager : MonoBehaviour
     [SerializeField] private GameObject wallPrefab;
     [SerializeField] private GameObject wallsParent;
     [SerializeField] private List<CellMaze> recursivePathCells = new();
-
     [SerializeField] private SerializableDictionary<RailShape, GameObject> rails;
 
     private float cellSize;
@@ -150,35 +149,6 @@ public class MazeManager : MonoBehaviour
         RecursivePathMaze(neighbourCellTuple.cell);
     }
 
-    public Direction GetOppositeDirection(Direction randomDirection)
-    {
-        switch (randomDirection)
-        {
-            case Direction.Top:
-                return Direction.Bottom;
-            case Direction.Right:
-                return Direction.Left;
-            case Direction.Bottom:
-                return Direction.Top;
-            case Direction.Left:
-                return Direction.Right;
-            default:
-                throw new Exception();
-        }
-    }
-
-    public void RemoveDynamicNeighbourFromStaticNeighbour(CellMaze cell)
-    {
-        foreach (var neighbour in cell.StaticNeighbours)
-        {
-            for (int i = neighbour.cell.DynamicNeighbours.Count - 1; i >= 0; i--)
-            {
-                if (neighbour.cell.DynamicNeighbours[i].cell != cell) continue;
-                neighbour.cell.DynamicNeighbours.RemoveAt(i);
-            }
-        }
-    }
-
     private IEnumerator GenerateRails()
     {
         foreach (var cell in cells)
@@ -205,17 +175,20 @@ public class MazeManager : MonoBehaviour
                         }
                     }
 
-                    if (directions[0] == Direction.Left && directions[1] == Direction.Top || directions[0] == Direction.Top && directions[1] == Direction.Left)
+                    if (directions[0] == Direction.Left && directions[1] == Direction.Top ||
+                        directions[0] == Direction.Top && directions[1] == Direction.Left)
                     {
                         rail.transform.Rotate(Vector3.up, 90);
                     }
 
-                    if (directions[0] == Direction.Top && directions[1] == Direction.Right || directions[0] == Direction.Right && directions[1] == Direction.Top)
+                    if (directions[0] == Direction.Top && directions[1] == Direction.Right ||
+                        directions[0] == Direction.Right && directions[1] == Direction.Top)
                     {
                         rail.transform.Rotate(Vector3.up, 180);
                     }
 
-                    if (directions[0] == Direction.Bottom && directions[1] == Direction.Right || directions[0] == Direction.Right && directions[1] == Direction.Bottom)
+                    if (directions[0] == Direction.Bottom && directions[1] == Direction.Right ||
+                        directions[0] == Direction.Right && directions[1] == Direction.Bottom)
                     {
                         rail.transform.Rotate(Vector3.up, -90);
                     }
@@ -273,4 +246,37 @@ public class MazeManager : MonoBehaviour
             yield return new WaitForSeconds(0.2f);
         }
     }
+
+    #region Utilities
+
+    public Direction GetOppositeDirection(Direction randomDirection)
+    {
+        switch (randomDirection)
+        {
+            case Direction.Top:
+                return Direction.Bottom;
+            case Direction.Right:
+                return Direction.Left;
+            case Direction.Bottom:
+                return Direction.Top;
+            case Direction.Left:
+                return Direction.Right;
+            default:
+                throw new Exception();
+        }
+    }
+
+    public void RemoveDynamicNeighbourFromStaticNeighbour(CellMaze cell)
+    {
+        foreach (var neighbour in cell.StaticNeighbours)
+        {
+            for (int i = neighbour.cell.DynamicNeighbours.Count - 1; i >= 0; i--)
+            {
+                if (neighbour.cell.DynamicNeighbours[i].cell != cell) continue;
+                neighbour.cell.DynamicNeighbours.RemoveAt(i);
+            }
+        }
+    }
+
+    #endregion
 }
