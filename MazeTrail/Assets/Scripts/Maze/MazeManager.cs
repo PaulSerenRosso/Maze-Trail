@@ -2,10 +2,13 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
 
 public class MazeManager : MonoBehaviour
 {
+    public CharacterController Player;
+
     [SerializeField] private int xSize = 10;
     [SerializeField] private int ySize = 10;
     [SerializeField] private List<CellMaze> cells;
@@ -22,21 +25,24 @@ public class MazeManager : MonoBehaviour
     [SerializeField] private CharacterController characterControllerPrefab;
     [SerializeField] private CameraController cameraController;
     [SerializeField] private float timer = 0.01f;
+    [SerializeField] private GameManager gameManager;
 
     private float cellSize;
     private int totalCells;
 
-    private void Start()
+    public void GenerateMaze(int size = 10)
     {
+        xSize = size;
+        ySize = size;
+        cellSize = cellPrefab.floor.transform.localScale.x;
+        totalCells = xSize * ySize;
+        cameraController.transform.position = new Vector3((xSize / 2) * cellSize, 10 * xSize / 2, ((xSize / 2) * cellSize) / 2);
         GenerateGridMaze();
         StartCoroutine(GenerateEntries());
     }
 
     private void GenerateGridMaze()
     {
-        cellSize = cellPrefab.floor.transform.localScale.x;
-        totalCells = xSize * ySize;
-
         for (int y = 0; y < ySize; y++)
         {
             for (int x = 0; x < xSize; x++)
@@ -84,8 +90,6 @@ public class MazeManager : MonoBehaviour
                 cells.Add(cell);
             }
         }
-        
-        
     }
 
     private WallCell GenerateWall(int x, int y, Direction direction)
@@ -196,10 +200,12 @@ public class MazeManager : MonoBehaviour
                             }
                         }
                     }
+
                     break;
                 }
             }
-            if (!isValid) continue; 
+
+            if (!isValid) continue;
             cellsU.Add(cell);
             wallsToDestroy.Add(wallToDestroy);
         }
@@ -228,7 +234,7 @@ public class MazeManager : MonoBehaviour
                     break;
                 }
             }
-            
+
             Destroy(cellsU[i].walls[oppositeDirection].gameObject);
             cellsU[i].walls[oppositeDirection] = null;
             var neighbourCell = cellsU[i].GetNeighbourStatic(oppositeDirection);
@@ -236,7 +242,7 @@ public class MazeManager : MonoBehaviour
             neighbourCell.walls[GetOppositeDirection(oppositeDirection)] = null;
             yield return new WaitForSeconds(timer);
         }
-        
+
         StartCoroutine(GenerateRails());
     }
 
@@ -249,8 +255,8 @@ public class MazeManager : MonoBehaviour
         yield return new WaitForSeconds(timer);
         CreateEntry(randomExit);
         yield return new WaitForSeconds(timer);
-        
-        
+
+
         var cell = cells[Random.Range(0, totalCells)];
         StartCoroutine(CreatePath(cell));
     }
@@ -288,7 +294,8 @@ public class MazeManager : MonoBehaviour
 
         for (int i = 0; i < numberOfCellsEntries; i++)
         {
-            var position = cells[index].walls[randomEntry].transform.position + direction * (i * cellSize + (cellSize / 2));
+            var position = cells[index].walls[randomEntry].transform.position +
+                           direction * (i * cellSize + (cellSize / 2));
             var cell = Instantiate(cellPrefab, position, Quaternion.identity, cellsParent.transform);
             cell.name = $"CellEntry";
 
@@ -296,15 +303,17 @@ public class MazeManager : MonoBehaviour
             {
                 cells[index].AddNeighbour(randomEntry, cell);
                 cell.AddNeighbour(GetOppositeDirection(randomEntry), cells[index]);
-                GenerateWallForEntries(cell, GetOppositeDirection(randomEntry), cells[index].walls[randomEntry], new Vector2(pos.x + direction.x * (i + 1), pos.y + direction.z * (i + 1)));
+                GenerateWallForEntries(cell, GetOppositeDirection(randomEntry), cells[index].walls[randomEntry],
+                    new Vector2(pos.x + direction.x * (i + 1), pos.y + direction.z * (i + 1)));
             }
             else
             {
                 cells[^1].AddNeighbour(randomEntry, cell);
                 cell.AddNeighbour(GetOppositeDirection(randomEntry), cells[^1]);
-                GenerateWallForEntries(cell, GetOppositeDirection(randomEntry), cells[^1].walls[randomEntry], new Vector2(pos.x + direction.x * (i + 1), pos.y + direction.z * (i + 1)));
+                GenerateWallForEntries(cell, GetOppositeDirection(randomEntry), cells[^1].walls[randomEntry],
+                    new Vector2(pos.x + direction.x * (i + 1), pos.y + direction.z * (i + 1)));
             }
-            
+
             cells.Add(cell);
         }
     }
@@ -340,7 +349,8 @@ public class MazeManager : MonoBehaviour
 
                 case RailShape.ShapeL:
                     var directions = new List<Direction>();
-                    intersection = Instantiate(intersectionPrefab, cell.transform.position, Quaternion.identity, cell.transform);
+                    intersection = Instantiate(intersectionPrefab, cell.transform.position, Quaternion.identity,
+                        cell.transform);
                     foreach (var wall in cell.walls)
                     {
                         if (!wall.Value)
@@ -353,19 +363,19 @@ public class MazeManager : MonoBehaviour
                         directions[0] == Direction.Top && directions[1] == Direction.Left)
                     {
                         rail.transform.Rotate(Vector3.up, 90);
-                     
+
                         intersection.availableDirections.Add(Direction.Left);
                         intersection.availableDirections.Add(Direction.Top);
                     }
                     else if (directions[0] == Direction.Top && directions[1] == Direction.Right ||
-                        directions[0] == Direction.Right && directions[1] == Direction.Top)
+                             directions[0] == Direction.Right && directions[1] == Direction.Top)
                     {
                         rail.transform.Rotate(Vector3.up, 180);
                         intersection.availableDirections.Add(Direction.Right);
                         intersection.availableDirections.Add(Direction.Top);
                     }
                     else if (directions[0] == Direction.Bottom && directions[1] == Direction.Right ||
-                        directions[0] == Direction.Right && directions[1] == Direction.Bottom)
+                             directions[0] == Direction.Right && directions[1] == Direction.Bottom)
                     {
                         rail.transform.Rotate(Vector3.up, -90);
                         intersection.availableDirections.Add(Direction.Right);
@@ -380,7 +390,8 @@ public class MazeManager : MonoBehaviour
                     break;
 
                 case RailShape.ShapeT:
-                    intersection = Instantiate(intersectionPrefab, cell.transform.position, Quaternion.identity, cell.transform);
+                    intersection = Instantiate(intersectionPrefab, cell.transform.position, Quaternion.identity,
+                        cell.transform);
                     foreach (var wall in cell.walls)
                     {
                         if (wall.Value)
@@ -439,7 +450,8 @@ public class MazeManager : MonoBehaviour
                     break;
 
                 case RailShape.ShapeX:
-                    intersection = Instantiate(intersectionPrefab, cell.transform.position, Quaternion.identity, cell.transform);
+                    intersection = Instantiate(intersectionPrefab, cell.transform.position, Quaternion.identity,
+                        cell.transform);
                     intersection.availableDirections.Add(Direction.Right);
                     intersection.availableDirections.Add(Direction.Bottom);
                     intersection.availableDirections.Add(Direction.Left);
@@ -449,26 +461,28 @@ public class MazeManager : MonoBehaviour
 
             yield return new WaitForSeconds(timer);
         }
-        
+
         CreatePlayer();
     }
 
     private void CreatePlayer()
     {
         var direction = (cells[^2].transform.position - cells[^1].transform.position).normalized;
-        var characterController = Instantiate(characterControllerPrefab, cells[^2].transform.position, Quaternion.LookRotation(direction));
-        characterController.Init(direction);
-        cameraController.Initialize(characterController.transform);
+        Player = Instantiate(characterControllerPrefab, cells[^2].transform.position,
+            Quaternion.LookRotation(direction));
+        Player.Init(direction, gameManager);
+        cameraController.Initialize(Player.transform);
     }
 
     private void AddInterpolatedRails(Vector3 pos, Vector3 pos2)
     {
-        var direction = (pos2-pos).normalized;
+        var direction = (pos2 - pos).normalized;
         var countInterpolatedRails = cellSize - 1;
         for (int i = 0; i < countInterpolatedRails; i++)
         {
             var interpolatedPos = pos + direction * (i + 1);
-            var interpolatedRail = Instantiate(rails[RailShape.ShapeI], interpolatedPos, Quaternion.identity, cellsParent.transform);
+            var interpolatedRail = Instantiate(rails[RailShape.ShapeI], interpolatedPos, Quaternion.identity,
+                cellsParent.transform);
             interpolatedRail.transform.LookAt(pos2);
         }
     }
