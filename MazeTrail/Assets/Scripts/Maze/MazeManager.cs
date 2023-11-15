@@ -19,14 +19,15 @@ public class MazeManager : MonoBehaviour
     [SerializeField] private int maxLoopSize = 5;
     [SerializeField] private int minLoopSize = 1;
 
+    [SerializeField] private int numberOfCellsEntries = 3;
+
     private float cellSize;
     private int totalCells;
 
     private void Start()
     {
         GenerateGridMaze();
-        var cell = cells[Random.Range(0, totalCells)];
-        StartCoroutine(CreatePath(cell));
+        StartCoroutine(GenerateEntries());
     }
 
     private void GenerateGridMaze()
@@ -81,6 +82,8 @@ public class MazeManager : MonoBehaviour
                 cells.Add(cell);
             }
         }
+        
+        
     }
 
     private WallCell GenerateWall(int x, int y, Direction direction)
@@ -141,8 +144,8 @@ public class MazeManager : MonoBehaviour
     {
         cell.floorMR.material.color = Color.white;
         var neighbourCellTuple = cell.DynamicNeighbours[Random.Range(0, cell.DynamicNeighbours.Count)];
-
         Destroy(cell.walls[neighbourCellTuple.direction].gameObject);
+        AddInterpolatedRails(cell.transform.position, neighbourCellTuple.cell.transform.position);
         cell.walls[neighbourCellTuple.direction] = null;
         neighbourCellTuple.cell.walls[GetOppositeDirection(neighbourCellTuple.direction)] = null;
         foreach (var neighbour in cell.DynamicNeighbours)
@@ -159,25 +162,44 @@ public class MazeManager : MonoBehaviour
     private IEnumerator GenerateCycle()
     {
         var cellsU = new List<CellMaze>();
+        var wallsToDestroy = new List<WallCell>();
         var currentMaxLoopSize = maxLoopSize;
         var currentMinLoopSize = maxLoopSize;
         foreach (var cell in cells)
         {
             var isValid = true;
+            WallCell wallToDestroy = null;
             if (cell.GetRailShape() != RailShape.ShapeU) continue;
             foreach (var wall in cell.walls)
             {
                 if (wall.Value == null)
                 {
-                    if (cell.walls[GetOppositeDirection(wall.Key)].isClosingWall)
+                    wallToDestroy = cell.walls[GetOppositeDirection(wall.Key)];
+                    if (wallToDestroy.isClosingWall)
                     {
                         isValid = false;
+                    }
+                    else
+                    {
+                        var neighbourCell = cell.GetNeighbourStatic(GetOppositeDirection(wall.Key));
+                        if (cellsU.Contains(neighbourCell))
+                        {
+                            foreach (var wallToTest in wallsToDestroy)
+                            {
+                                if (wallToDestroy == wallToTest)
+                                {
+                                    isValid = false;
+                                    break;
+                                }
+                            }
+                        }
                     }
                     break;
                 }
             }
             if (!isValid) continue; 
             cellsU.Add(cell);
+            wallsToDestroy.Add(wallToDestroy);
         }
 
         if (cellsU.Count < maxLoopSize)
@@ -208,11 +230,12 @@ public class MazeManager : MonoBehaviour
             Destroy(cellsU[i].walls[oppositeDirection].gameObject);
             cellsU[i].walls[oppositeDirection] = null;
             var neighbourCell = cellsU[i].GetNeighbourStatic(oppositeDirection);
+            AddInterpolatedRails(cellsU[i].transform.position, neighbourCell.transform.position);
             neighbourCell.walls[GetOppositeDirection(oppositeDirection)] = null;
             yield return new WaitForSeconds(1.0f);
         }
-
-        StartCoroutine(GenerateEntries());
+        
+        StartCoroutine(GenerateRails());
     }
 
     private IEnumerator GenerateEntries()
@@ -225,35 +248,74 @@ public class MazeManager : MonoBehaviour
         CreateEntry(randomExit);
         yield return new WaitForSeconds(1.0f);
         
-        StartCoroutine(GenerateRails());
+        
+        var cell = cells[Random.Range(0, totalCells)];
+        StartCoroutine(CreatePath(cell));
     }
 
     private void CreateEntry(Direction randomEntry)
     {
         var randomX = Random.Range(0, xSize);
         var randomY = Random.Range(0, ySize);
-        int index;
+        int index = 0;
+        var pos = Vector2.zero;
+        Vector3 direction = Vector3.zero;
         switch (randomEntry)
         {
             case Direction.Top:
                 index = ((ySize - 1) * xSize) + randomX;
-                Destroy(cells[index].walls[Direction.Top].gameObject);
-                cells[index].walls[Direction.Top] = null;
+                direction = Vector3.forward;
+                pos = new Vector2(randomX, ySize - 1);
                 break;
             case Direction.Right:
                 index = (randomY) * xSize + xSize - 1;
-                Destroy(cells[index].walls[Direction.Right].gameObject);
-                cells[index].walls[Direction.Right] = null;
+                direction = Vector3.right;
+                pos = new Vector2((xSize - 1), randomY);
                 break;
             case Direction.Bottom:
-                Destroy(cells[randomX].walls[Direction.Bottom].gameObject);
-                cells[randomX].walls[Direction.Bottom] = null;
+                index = randomX;
+                direction = Vector3.back;
+                pos = new Vector2(randomX, 0);
                 break;
             case Direction.Left:
                 index = (randomY) * xSize;
-                Destroy(cells[index].walls[Direction.Left].gameObject);
-                cells[index].walls[Direction.Left] = null;
+                direction = Vector3.left;
+                pos = new Vector2(0, randomY);
                 break;
+        }
+
+        for (int i = 0; i < numberOfCellsEntries; i++)
+        {
+            var position = cells[index].walls[randomEntry].transform.position + direction * (i * cellSize + (cellSize / 2));
+            var cell = Instantiate(cellPrefab, position, Quaternion.identity, cellsParent.transform);
+            cell.name = $"CellEntry";
+
+            if (i == 0)
+            {
+                cells[index].AddNeighbour(randomEntry, cell);
+                cell.AddNeighbour(GetOppositeDirection(randomEntry), cells[index]);
+                GenerateWallForEntries(cell, GetOppositeDirection(randomEntry), cells[index].walls[randomEntry], new Vector2(pos.x + direction.x * (i + 1), pos.y + direction.z * (i + 1)));
+            }
+            else
+            {
+                cells[^1].AddNeighbour(randomEntry, cell);
+                cell.AddNeighbour(GetOppositeDirection(randomEntry), cells[^1]);
+                GenerateWallForEntries(cell, GetOppositeDirection(randomEntry), cells[^1].walls[randomEntry], new Vector2(pos.x + direction.x * (i + 1), pos.y + direction.z * (i + 1)));
+            }
+            
+            cells.Add(cell);
+        }
+    }
+
+    private void GenerateWallForEntries(CellMaze cell, Direction directionWall, WallCell startWall, Vector2 position)
+    {
+        cell.walls.Add(directionWall, startWall);
+        for (int j = 0; j < 4; j++)
+        {
+            if (j == (int)directionWall) continue;
+            var wall = GenerateWall((int)position.x, (int)position.y, (Direction)j);
+            cell.walls.Add((Direction)j, wall);
+            wall.isClosingWall = true;
         }
     }
 
@@ -352,6 +414,18 @@ public class MazeManager : MonoBehaviour
             }
 
             yield return new WaitForSeconds(0.2f);
+        }
+    }
+    
+    private void AddInterpolatedRails(Vector3 pos, Vector3 pos2)
+    {
+        var direction = (pos2-pos).normalized;
+        var countInterpolatedRails = cellSize - 1;
+        for (int i = 0; i < countInterpolatedRails; i++)
+        {
+            var interpolatedPos = pos + direction * (i + 1);
+            var interpolatedRail = Instantiate(rails[RailShape.ShapeI], interpolatedPos, Quaternion.identity, cellsParent.transform);
+            interpolatedRail.transform.LookAt(pos2);
         }
     }
 

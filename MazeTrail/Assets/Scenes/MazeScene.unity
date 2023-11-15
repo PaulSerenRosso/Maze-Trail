@@ -295,7 +295,7 @@ MonoBehaviour:
   cellPrefab: {fileID: -6096657254893704654, guid: 8123936067865504e949f13d24a3535f,
     type: 3}
   cellsParent: {fileID: 1095001295}
-  wallPrefab: {fileID: 3256221407044834780, guid: 4697daf02a6c4bd429d1342ad88f6a9a,
+  wallPrefab: {fileID: 2745351227760263303, guid: 4697daf02a6c4bd429d1342ad88f6a9a,
     type: 3}
   wallsParent: {fileID: 1814878509}
   recursivePathCells: []
