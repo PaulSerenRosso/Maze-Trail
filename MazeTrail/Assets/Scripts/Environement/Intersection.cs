@@ -4,36 +4,12 @@ using UnityEngine;
 
 public class Intersection : MonoBehaviour
 {
-    public Direction currentDirection = Direction.None;
+    public List<Direction> availableDirection = new List<Direction>();
 
-    public void SwapDirection()
+    public bool MatchDirection(Direction playerDirection)
     {
-        switch (currentDirection)
-        {
-            case Direction.Forward:
-                currentDirection = Direction.Backward;
-                break;
-            case Direction.Backward:
-                currentDirection = Direction.Forward;
-                break;
-            case Direction.Left:
-                currentDirection = Direction.Right;
-                break;
-            case Direction.Right:
-                currentDirection = Direction.Left;
-                break;
-            default:
-                currentDirection = Direction.None;
-                break;
-        }
+        return availableDirection.Contains(playerDirection);  
     }
     
-    public enum Direction
-    {
-        None,
-        Forward,
-        Backward,
-        Left,
-        Right
-    }
+    
 }

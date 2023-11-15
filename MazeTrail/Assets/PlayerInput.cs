@@ -28,7 +28,7 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
             ""id"": ""34ee2a45-e801-4d8d-9816-54d118d50fc3"",
             ""actions"": [
                 {
-                    ""name"": ""Forward"",
+                    ""name"": ""Accelerate"",
                     ""type"": ""Button"",
                     ""id"": ""580eac8c-53d9-44d9-8382-a4cbd4cc9cab"",
                     ""expectedControlType"": ""Button"",
@@ -37,9 +37,54 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""Backward"",
+                    ""name"": ""Decelerate"",
                     ""type"": ""Button"",
                     ""id"": ""22173fa4-18e8-4ffc-8928-b44501b4af0f"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Forward"",
+                    ""type"": ""Button"",
+                    ""id"": ""aabc1cd5-74d9-4e2a-87a7-75e506a7c49e"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Backward"",
+                    ""type"": ""Button"",
+                    ""id"": ""1bec117d-994c-4083-8cda-ac294ef50e1a"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""TurnLeft"",
+                    ""type"": ""Button"",
+                    ""id"": ""3824c51c-04b7-4bbe-bc36-8833ceb531b4"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""TurnRight"",
+                    ""type"": ""Button"",
+                    ""id"": ""0ff51f72-5783-4aab-ad2c-630433f954d3"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""TurnAround"",
+                    ""type"": ""Button"",
+                    ""id"": ""3ebf7e75-f203-401f-97aa-40ef0d3d7599"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """",
@@ -50,17 +95,72 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""b7ea023c-99cc-4b6b-bf77-f70d46b92e30"",
-                    ""path"": ""<Keyboard>/z"",
+                    ""path"": ""<Mouse>/leftButton"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""Forward"",
+                    ""action"": ""Accelerate"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
                 {
                     ""name"": """",
-                    ""id"": ""00cd1e8c-0124-46ca-9ae7-eaf7338e0633"",
+                    ""id"": ""248fa821-6338-49de-8335-44ea518eac53"",
+                    ""path"": ""<Mouse>/rightButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Decelerate"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""4f3d9e3a-ea66-4cad-83e2-168f054a9db7"",
+                    ""path"": ""<Keyboard>/leftArrow"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""TurnLeft"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""034eec07-28d4-4f1c-bf3a-1731c61fdce4"",
+                    ""path"": ""<Keyboard>/q"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""TurnLeft"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""45915a5c-383c-4fdc-9b80-5d3ee56080f4"",
+                    ""path"": ""<Keyboard>/rightArrow"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""TurnRight"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""436d22b4-0ffa-4d57-9660-0cd7cb7607ff"",
+                    ""path"": ""<Keyboard>/d"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""TurnRight"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""61fd044c-9d7c-45d4-b699-3af05e40cf3d"",
                     ""path"": ""<Keyboard>/upArrow"",
                     ""interactions"": """",
                     ""processors"": """",
@@ -71,7 +171,29 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""248fa821-6338-49de-8335-44ea518eac53"",
+                    ""id"": ""857ce368-df1a-4adf-bef2-f21198961613"",
+                    ""path"": ""<Keyboard>/z"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Forward"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""b4a59781-367d-4e9a-84ae-726293f8e00c"",
+                    ""path"": ""<Keyboard>/downArrow"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Backward"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""b1f4e67b-ae29-4e84-8af8-b7c596e91fab"",
                     ""path"": ""<Keyboard>/s"",
                     ""interactions"": """",
                     ""processors"": """",
@@ -82,12 +204,12 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""56cf7e39-3ae6-4a75-9d16-4ebdc90ea3dd"",
-                    ""path"": ""<Keyboard>/downArrow"",
+                    ""id"": ""ef837818-4878-4c28-9c95-7f6c87f27430"",
+                    ""path"": ""<Keyboard>/space"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""Backward"",
+                    ""action"": ""TurnAround"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -98,8 +220,13 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
 }");
         // Player
         m_Player = asset.FindActionMap("Player", throwIfNotFound: true);
+        m_Player_Accelerate = m_Player.FindAction("Accelerate", throwIfNotFound: true);
+        m_Player_Decelerate = m_Player.FindAction("Decelerate", throwIfNotFound: true);
         m_Player_Forward = m_Player.FindAction("Forward", throwIfNotFound: true);
         m_Player_Backward = m_Player.FindAction("Backward", throwIfNotFound: true);
+        m_Player_TurnLeft = m_Player.FindAction("TurnLeft", throwIfNotFound: true);
+        m_Player_TurnRight = m_Player.FindAction("TurnRight", throwIfNotFound: true);
+        m_Player_TurnAround = m_Player.FindAction("TurnAround", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -161,14 +288,24 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
     // Player
     private readonly InputActionMap m_Player;
     private List<IPlayerActions> m_PlayerActionsCallbackInterfaces = new List<IPlayerActions>();
+    private readonly InputAction m_Player_Accelerate;
+    private readonly InputAction m_Player_Decelerate;
     private readonly InputAction m_Player_Forward;
     private readonly InputAction m_Player_Backward;
+    private readonly InputAction m_Player_TurnLeft;
+    private readonly InputAction m_Player_TurnRight;
+    private readonly InputAction m_Player_TurnAround;
     public struct PlayerActions
     {
         private @PlayerInput m_Wrapper;
         public PlayerActions(@PlayerInput wrapper) { m_Wrapper = wrapper; }
+        public InputAction @Accelerate => m_Wrapper.m_Player_Accelerate;
+        public InputAction @Decelerate => m_Wrapper.m_Player_Decelerate;
         public InputAction @Forward => m_Wrapper.m_Player_Forward;
         public InputAction @Backward => m_Wrapper.m_Player_Backward;
+        public InputAction @TurnLeft => m_Wrapper.m_Player_TurnLeft;
+        public InputAction @TurnRight => m_Wrapper.m_Player_TurnRight;
+        public InputAction @TurnAround => m_Wrapper.m_Player_TurnAround;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -178,22 +315,52 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
         {
             if (instance == null || m_Wrapper.m_PlayerActionsCallbackInterfaces.Contains(instance)) return;
             m_Wrapper.m_PlayerActionsCallbackInterfaces.Add(instance);
+            @Accelerate.started += instance.OnAccelerate;
+            @Accelerate.performed += instance.OnAccelerate;
+            @Accelerate.canceled += instance.OnAccelerate;
+            @Decelerate.started += instance.OnDecelerate;
+            @Decelerate.performed += instance.OnDecelerate;
+            @Decelerate.canceled += instance.OnDecelerate;
             @Forward.started += instance.OnForward;
             @Forward.performed += instance.OnForward;
             @Forward.canceled += instance.OnForward;
             @Backward.started += instance.OnBackward;
             @Backward.performed += instance.OnBackward;
             @Backward.canceled += instance.OnBackward;
+            @TurnLeft.started += instance.OnTurnLeft;
+            @TurnLeft.performed += instance.OnTurnLeft;
+            @TurnLeft.canceled += instance.OnTurnLeft;
+            @TurnRight.started += instance.OnTurnRight;
+            @TurnRight.performed += instance.OnTurnRight;
+            @TurnRight.canceled += instance.OnTurnRight;
+            @TurnAround.started += instance.OnTurnAround;
+            @TurnAround.performed += instance.OnTurnAround;
+            @TurnAround.canceled += instance.OnTurnAround;
         }
 
         private void UnregisterCallbacks(IPlayerActions instance)
         {
+            @Accelerate.started -= instance.OnAccelerate;
+            @Accelerate.performed -= instance.OnAccelerate;
+            @Accelerate.canceled -= instance.OnAccelerate;
+            @Decelerate.started -= instance.OnDecelerate;
+            @Decelerate.performed -= instance.OnDecelerate;
+            @Decelerate.canceled -= instance.OnDecelerate;
             @Forward.started -= instance.OnForward;
             @Forward.performed -= instance.OnForward;
             @Forward.canceled -= instance.OnForward;
             @Backward.started -= instance.OnBackward;
             @Backward.performed -= instance.OnBackward;
             @Backward.canceled -= instance.OnBackward;
+            @TurnLeft.started -= instance.OnTurnLeft;
+            @TurnLeft.performed -= instance.OnTurnLeft;
+            @TurnLeft.canceled -= instance.OnTurnLeft;
+            @TurnRight.started -= instance.OnTurnRight;
+            @TurnRight.performed -= instance.OnTurnRight;
+            @TurnRight.canceled -= instance.OnTurnRight;
+            @TurnAround.started -= instance.OnTurnAround;
+            @TurnAround.performed -= instance.OnTurnAround;
+            @TurnAround.canceled -= instance.OnTurnAround;
         }
 
         public void RemoveCallbacks(IPlayerActions instance)
@@ -213,7 +380,12 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
     public PlayerActions @Player => new PlayerActions(this);
     public interface IPlayerActions
     {
+        void OnAccelerate(InputAction.CallbackContext context);
+        void OnDecelerate(InputAction.CallbackContext context);
         void OnForward(InputAction.CallbackContext context);
         void OnBackward(InputAction.CallbackContext context);
+        void OnTurnLeft(InputAction.CallbackContext context);
+        void OnTurnRight(InputAction.CallbackContext context);
+        void OnTurnAround(InputAction.CallbackContext context);
     }
 }
