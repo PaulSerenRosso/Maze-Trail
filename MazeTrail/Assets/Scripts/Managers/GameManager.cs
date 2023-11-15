@@ -1,11 +1,14 @@
 using System;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
     private static GameManager instance;
 
     [SerializeField] private UIManager uiManager;
+    [SerializeField] private GameObject player;
+    [SerializeField] private Camera camera;
     
     private void Awake()
     {
@@ -19,16 +22,24 @@ public class GameManager : MonoBehaviour
 
     public static void EndGame(bool win)
     {
+        if (!win) DestroyPlayer();
+        else instance.camera.GetComponent<CameraController>().UnlinkTarget();
         instance.uiManager.PopEndMenu(win ? "You won !" : "You Lost..");
     }
     
     public static void ReturnToMenuFromGame()
     {
-        
+        SceneManager.LoadScene(0); //assume menu is scene 0
     }
 
     public static void Restart(bool newMap)
     {
         
+    }
+
+    public static void DestroyPlayer()
+    {
+        instance.camera.GetComponent<CameraController>().UnlinkTarget();
+        Destroy(instance.player);
     }
 }

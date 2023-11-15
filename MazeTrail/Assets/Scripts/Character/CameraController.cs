@@ -8,6 +8,8 @@ public class CameraController : MonoBehaviour
 
     void Update()
     {
+        if (!target) return;
+        
         bool targetLooksBack = target.GetComponent<CharacterController>().IsLookingBackwards();
         float lerpT = 1 - Mathf.Exp(-5f * Time.deltaTime);
         Vector3 offsetVector = (targetLooksBack ? 1 : -1) * offset * target.forward;
@@ -22,5 +24,10 @@ public class CameraController : MonoBehaviour
         
         transform.position = Vector3.Lerp(transform.position, (target.position - offsetVector), lerpT);
         transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, lerpT);
+    }
+
+    public void UnlinkTarget()
+    {
+        target = null;
     }
 }
