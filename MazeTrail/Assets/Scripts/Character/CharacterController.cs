@@ -167,6 +167,7 @@ public class CharacterController : MonoBehaviour
             else
             {
                 Debug.LogError("Wagon crashed !");
+                GameManager.EndGame(false);
             }
             
             transform.position = new Vector3(other.transform.position.x, transform.position.y, other.transform.position.z);
