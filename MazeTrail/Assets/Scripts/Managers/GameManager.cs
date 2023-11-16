@@ -34,7 +34,7 @@ public class GameManager : MonoBehaviour
 
     public static void Restart(bool newMap)
     {
-        
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
     public static void DestroyPlayer()
