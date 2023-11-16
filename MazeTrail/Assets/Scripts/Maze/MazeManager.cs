@@ -1,8 +1,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using UnityEditor.Rendering;
 using UnityEngine;
-using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
 
 public class MazeManager : MonoBehaviour
@@ -23,20 +24,36 @@ public class MazeManager : MonoBehaviour
     [SerializeField] private int numberOfCellsEntries = 3;
     [SerializeField] private Intersection intersectionPrefab;
     [SerializeField] private CharacterController characterControllerPrefab;
+    [SerializeField] private GameObject entryPrefab;
+    [SerializeField] private Exit exitPrefab;
+    [SerializeField] private GameObject acceleratorPrefab;
     [SerializeField] private CameraController cameraController;
     [SerializeField] private float timer = 0.01f;
     [SerializeField] private GameManager gameManager;
+    [SerializeField] private float factorL = 0.5f;
+    [SerializeField] private float factorT = 0.75f;
+    [SerializeField] private float factorX = 1.0f;
+    [SerializeField] private Biome[] biomes;
 
     private float cellSize;
     private int totalCells;
+    private int intersectionsLCount;
+    private int intersectionsTCount;
+    private int intersectionsXCount;
 
     public void GenerateMaze(int size = 10)
     {
         xSize = size;
         ySize = size;
+        timer /= size;
+        maxLoopSize = size / 2;
+        intersectionsLCount = 0;
+        intersectionsTCount = 0;
+        intersectionsXCount = 0;
         cellSize = cellPrefab.floor.transform.localScale.x;
         totalCells = xSize * ySize;
-        cameraController.transform.position = new Vector3((xSize / 2) * cellSize, 10 * xSize / 2, ((xSize / 2) * cellSize) / 2);
+        cameraController.transform.position =
+            new Vector3((xSize / 2) * cellSize, 10 * xSize / 2, ((xSize / 2) * cellSize) / 2);
         GenerateGridMaze();
         StartCoroutine(GenerateEntries());
     }
@@ -127,13 +144,7 @@ public class MazeManager : MonoBehaviour
     {
         var cell = recursiveCell;
 
-        if (recursivePathCells.Count == 0)
-        {
-            StartCoroutine(GenerateCycle());
-            return;
-        }
-
-        if (cell.DynamicNeighbours.Count == 0)
+        if (cell.DynamicNeighbours.Count == 0 && recursivePathCells.Count != 0)
         {
             cell.floorMR.material.color = Color.blue;
             RemoveDynamicNeighbourFromStaticNeighbour(cell);
@@ -143,7 +154,15 @@ public class MazeManager : MonoBehaviour
             return;
         }
 
-        StartCoroutine(CreatePath(cell));
+        if (recursivePathCells.Count != 0)
+        {
+            StartCoroutine(CreatePath(cell));
+        }
+
+        if (recursivePathCells.Count == 0)
+        {
+            StartCoroutine(GenerateCycle());
+        }
     }
 
     private IEnumerator CreatePath(CellMaze cell)
@@ -248,20 +267,20 @@ public class MazeManager : MonoBehaviour
 
     private IEnumerator GenerateEntries()
     {
-        var randomEntry = (Direction)Random.Range(0, 4);
-        var randomExit = GetOppositeDirection(randomEntry);
+        var randomExit = (Direction)Random.Range(0, 4);
 
-        CreateEntry(randomEntry);
-        yield return new WaitForSeconds(timer);
-        CreateEntry(randomExit);
-        yield return new WaitForSeconds(timer);
-
+        for (int i = 0; i < 4; i++)
+        {
+            if (randomExit == (Direction)i) CreateEntry(randomExit, true);
+            else CreateEntry((Direction)i);
+            yield return new WaitForSeconds(timer);
+        }
 
         var cell = cells[Random.Range(0, totalCells)];
         StartCoroutine(CreatePath(cell));
     }
 
-    private void CreateEntry(Direction randomEntry)
+    private void CreateEntry(Direction randomEntry, bool isExit = false)
     {
         var randomX = Random.Range(0, xSize);
         var randomY = Random.Range(0, ySize);
@@ -316,6 +335,19 @@ public class MazeManager : MonoBehaviour
 
             cells.Add(cell);
         }
+
+        var directionToLook = (cells[^1].transform.position - cells[^2].transform.position).normalized;
+        if (isExit)
+        {
+            var exit = Instantiate(exitPrefab, cells[^2].transform.position, Quaternion.LookRotation(-directionToLook),
+                cells[^2].transform);
+            exit.Initialize(gameManager);
+        }
+        else
+        {
+            Instantiate(entryPrefab, cells[^2].transform.position, Quaternion.LookRotation(directionToLook),
+                cells[^2].transform);
+        }
     }
 
     private void GenerateWallForEntries(CellMaze cell, Direction directionWall, WallCell startWall, Vector2 position)
@@ -332,11 +364,44 @@ public class MazeManager : MonoBehaviour
 
     private IEnumerator GenerateRails()
     {
-        Intersection intersection = null;
-        foreach (var cell in cells)
+        Intersection intersection;
+        List<int> cellsX = new();
+        List<int> cellsY = new();
+        for (var index = 0; index < cells.Count; index++)
         {
+            var cell = cells[index];
             var shape = cell.GetRailShape();
-            var rail = Instantiate(rails[shape], cell.transform.position, Quaternion.identity, cell.transform);
+            GameObject rail = null;
+            if (shape == RailShape.ShapeI)
+            {
+             
+                if (Random.Range(0.0f, 1.0f) > 0.5f)
+                {
+                        var currentX = index % xSize;
+                        var currentY = Mathf.FloorToInt((float)index / xSize);
+                      
+                        if (!cellsX.Contains(currentX) && !cellsY.Contains(currentY))
+                        {
+                            rail = Instantiate(acceleratorPrefab, cell.transform.position, Quaternion.identity, cell.transform);
+                            cellsX.Add(currentX);
+                            cellsY.Add(currentY);
+                        }
+                        else
+                        {
+                            rail = Instantiate(rails[shape], cell.transform.position, Quaternion.identity, cell.transform);
+                        }
+                }
+                
+                else
+                {
+                    rail = Instantiate(rails[shape], cell.transform.position, Quaternion.identity, cell.transform);
+                }
+            }
+            else
+            {
+                rail = Instantiate(rails[shape], cell.transform.position, Quaternion.identity, cell.transform);
+            }
+
             switch (shape)
             {
                 case RailShape.ShapeI:
@@ -348,6 +413,7 @@ public class MazeManager : MonoBehaviour
                     break;
 
                 case RailShape.ShapeL:
+                    intersectionsLCount++;
                     var directions = new List<Direction>();
                     intersection = Instantiate(intersectionPrefab, cell.transform.position, Quaternion.identity,
                         cell.transform);
@@ -390,6 +456,7 @@ public class MazeManager : MonoBehaviour
                     break;
 
                 case RailShape.ShapeT:
+                    intersectionsTCount++;
                     intersection = Instantiate(intersectionPrefab, cell.transform.position, Quaternion.identity,
                         cell.transform);
                     foreach (var wall in cell.walls)
@@ -428,6 +495,8 @@ public class MazeManager : MonoBehaviour
                     break;
 
                 case RailShape.ShapeU:
+                    intersection = Instantiate(intersectionPrefab, cell.transform.position, Quaternion.identity,
+                        cell.transform);
                     foreach (var wall in cell.walls)
                     {
                         if (!wall.Value)
@@ -450,6 +519,7 @@ public class MazeManager : MonoBehaviour
                     break;
 
                 case RailShape.ShapeX:
+                    intersectionsXCount++;
                     intersection = Instantiate(intersectionPrefab, cell.transform.position, Quaternion.identity,
                         cell.transform);
                     intersection.availableDirections.Add(Direction.Right);
@@ -462,16 +532,61 @@ public class MazeManager : MonoBehaviour
             yield return new WaitForSeconds(timer);
         }
 
+        StartCoroutine(CreateBiome());
         CreatePlayer();
     }
 
     private void CreatePlayer()
     {
-        var direction = (cells[^2].transform.position - cells[^1].transform.position).normalized;
-        Player = Instantiate(characterControllerPrefab, cells[^2].transform.position,
+        var midCell = cells[Mathf.FloorToInt((totalCells - 12) / 2)];
+        CellMaze neighbourCell = null;
+        foreach (var wall in midCell.walls)
+        {
+            if (wall.Value != null) continue;
+            neighbourCell = midCell.GetNeighbourStatic(wall.Key);
+            break;
+        }
+
+        var direction = (neighbourCell.transform.position - midCell.transform.position).normalized;
+        Player = Instantiate(characterControllerPrefab, midCell.transform.position + (direction * (cellSize / 2)),
             Quaternion.LookRotation(direction));
         Player.Init(direction, gameManager);
         cameraController.Initialize(Player.transform);
+        var time = (intersectionsXCount * factorX + intersectionsTCount * factorT + intersectionsLCount * factorL) *
+                   xSize;
+        gameManager.SetTimer(time);
+    }
+
+    private IEnumerator CreateBiome()
+    {
+        var biomeSize = xSize / 3;
+        for (int i = 0; i < 3; i++)
+        {
+            for (int j = 0; j < 3; j++)
+            {
+                var biome = biomes[j + i * 3];
+                for (int y = i * biomeSize; y < biomeSize + (i * biomeSize); y++)
+                {
+                    for (int x = j * biomeSize; x < biomeSize + j * biomeSize; x++)
+                    {
+                        var listWalls = cells[(y * xSize) + x].walls.Values.ToList();
+                        listWalls.Shuffle();
+                        foreach (var wall in listWalls)
+                        {
+                            if (wall == null) continue;
+                            var direction = (cells[y * xSize + x].transform.position - wall.transform.position)
+                                .normalized;
+                            var prop = Instantiate(biome.prefabs[Random.Range(0, biome.prefabs.Count)],
+                                wall.transform.position + direction * (cellSize / 4),
+                                Quaternion.LookRotation(direction));
+                            prop.transform.parent = wall.transform;
+                            yield return new WaitForSeconds(timer);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
     }
 
     private void AddInterpolatedRails(Vector3 pos, Vector3 pos2)

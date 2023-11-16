@@ -422,9 +422,46 @@ MonoBehaviour:
     type: 3}
   characterControllerPrefab: {fileID: 7305234246351051129, guid: 6436c56cf8b26fb4eac1be583eae6b9b,
     type: 3}
+  entryPrefab: {fileID: 5607107162579962209, guid: 980cbeaf03b14ec468d96c1753158cba,
+    type: 3}
+  exitPrefab: {fileID: 1154873880348666794, guid: 1039f984e326d68469eb181db048a88e,
+    type: 3}
+  acceleratorPrefab: {fileID: 8233393759906849643, guid: 57b59ae4b395a8947929a5ae6ee41f10,
+    type: 3}
   cameraController: {fileID: 125359912}
   timer: 0.01
   gameManager: {fileID: 2063210220}
+  factorL: 0.5
+  factorT: 0.5
+  factorX: 0.5
+  biomes:
+  - prefabs:
+    - {fileID: 2112116313379807869, guid: f699194b20f514f419d4a99a4af55439, type: 3}
+    - {fileID: 6290322946084541679, guid: 180eb79e6f98a3a469516ec6152a6d32, type: 3}
+  - prefabs:
+    - {fileID: 6494810706504160473, guid: 1b7ecca8d564cf148a2c52d618655e5b, type: 3}
+    - {fileID: 6821877103098844823, guid: f48cd2301615cf149ac9db757e0763fa, type: 3}
+  - prefabs:
+    - {fileID: 3595018337278604511, guid: 1fb5e9bb25f3f8543bb217a24915ab1c, type: 3}
+    - {fileID: 8947575320875640369, guid: fbb2546818d5c434f89240db4e3e42e3, type: 3}
+  - prefabs:
+    - {fileID: 8457779294052092037, guid: b7ce5432d77cf014487f79fa21e4b58e, type: 3}
+    - {fileID: 4940212376683169668, guid: 345622dc98719a74ea0ac1f72dfca3b4, type: 3}
+  - prefabs:
+    - {fileID: 4061186345543275479, guid: 2850dd7e07631184aaea6d0c72d85215, type: 3}
+    - {fileID: 2958942815088143252, guid: 7df3ad7ed45939a498a3a006d18228c6, type: 3}
+  - prefabs:
+    - {fileID: 4436321909279492427, guid: 5dca2abaa2b21ec4a9a85ffc4fc31f60, type: 3}
+    - {fileID: 7493956872044818425, guid: 7b0a145fce9d6354f850495a952dd7f9, type: 3}
+  - prefabs:
+    - {fileID: 3595018337278604511, guid: 1fb5e9bb25f3f8543bb217a24915ab1c, type: 3}
+    - {fileID: 4436321909279492427, guid: 5dca2abaa2b21ec4a9a85ffc4fc31f60, type: 3}
+  - prefabs:
+    - {fileID: 6821877103098844823, guid: f48cd2301615cf149ac9db757e0763fa, type: 3}
+    - {fileID: 7493956872044818425, guid: 7b0a145fce9d6354f850495a952dd7f9, type: 3}
+  - prefabs:
+    - {fileID: 6494810706504160473, guid: 1b7ecca8d564cf148a2c52d618655e5b, type: 3}
+    - {fileID: 2112116313379807869, guid: f699194b20f514f419d4a99a4af55439, type: 3}
 --- !u!4 &871028639
 Transform:
   m_ObjectHideFlags: 0
@@ -528,26 +565,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 2647134058579021879, guid: 6f4bc815d4903124e8092fb7c61e2cae,
-        type: 3}
-      propertyPath: m_UiScaleMode
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2647134058579021879, guid: 6f4bc815d4903124e8092fb7c61e2cae,
-        type: 3}
-      propertyPath: m_ReferenceResolution.x
-      value: 1920
-      objectReference: {fileID: 0}
-    - target: {fileID: 2647134058579021879, guid: 6f4bc815d4903124e8092fb7c61e2cae,
-        type: 3}
-      propertyPath: m_ReferenceResolution.y
-      value: 1080
-      objectReference: {fileID: 0}
-    - target: {fileID: 4685421194306874547, guid: 6f4bc815d4903124e8092fb7c61e2cae,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 4743263683528645834, guid: 6f4bc815d4903124e8092fb7c61e2cae,
         type: 3}
       propertyPath: m_Pivot.x
