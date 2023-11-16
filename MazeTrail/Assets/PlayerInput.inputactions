@@ -33,15 +33,6 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "Backward",
-                    "type": "Button",
-                    "id": "1bec117d-994c-4083-8cda-ac294ef50e1a",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
                     "name": "TurnLeft",
                     "type": "Button",
                     "id": "3824c51c-04b7-4bbe-bc36-8833ceb531b4",
@@ -106,7 +97,7 @@
                 {
                     "name": "",
                     "id": "034eec07-28d4-4f1c-bf3a-1731c61fdce4",
-                    "path": "<Keyboard>/q",
+                    "path": "<Keyboard>/a",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -150,7 +141,7 @@
                 {
                     "name": "",
                     "id": "857ce368-df1a-4adf-bef2-f21198961613",
-                    "path": "<Keyboard>/z",
+                    "path": "<Keyboard>/w",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -160,30 +151,19 @@
                 },
                 {
                     "name": "",
-                    "id": "b4a59781-367d-4e9a-84ae-726293f8e00c",
+                    "id": "ef837818-4878-4c28-9c95-7f6c87f27430",
                     "path": "<Keyboard>/downArrow",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Backward",
+                    "action": "TurnAround",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
                 {
                     "name": "",
-                    "id": "b1f4e67b-ae29-4e84-8af8-b7c596e91fab",
+                    "id": "50b312f0-b808-4e37-b558-9f19cda4bdfe",
                     "path": "<Keyboard>/s",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Backward",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "ef837818-4878-4c28-9c95-7f6c87f27430",
-                    "path": "<Keyboard>/space",
                     "interactions": "",
                     "processors": "",
                     "groups": "",

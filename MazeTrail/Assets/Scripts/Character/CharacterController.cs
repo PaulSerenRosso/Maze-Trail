@@ -1,3 +1,5 @@
+using System;
+using Unity.VisualScripting;
 using UnityEngine;
 using Vector3 = UnityEngine.Vector3;
 
@@ -7,14 +9,19 @@ public class CharacterController : MonoBehaviour
     [SerializeField] private float maxSpeed;
     [SerializeField] private float breakForce;
 
+    [SerializeField] private Transform directionIndicator;
+    
     private Rigidbody rb;
     private Vector3 direction = Vector3.forward;
 
     private Direction nextDirection = Direction.Top;
-
-    private bool accelerated = false;
-    private bool lookBackwards = false;
-
+    
+    private bool accelerated;
+    private bool lookBackwards;
+    private bool lockControls;
+   
+    private Intersection nextIntersection;
+    
     private PlayerInput inputSystem;
     private GameManager gameManager;
 
@@ -39,20 +46,24 @@ public class CharacterController : MonoBehaviour
     void Update()
     {
         GetInput();
+        HandleIntersection();
         MovePlayer();
     }
 
     private void GetInput()
     {
-        //Acceleration & deceleration
-        if (inputSystem.Player.Accelerate.IsPressed() && !accelerated)
+        if (!lockControls)
         {
-            rb.AddForce(acceleration * (lookBackwards ? -1 : 1) * direction, ForceMode.Acceleration);
-        }
+            //Acceleration & deceleration
+            if (inputSystem.Player.Accelerate.IsPressed() && !accelerated)
+            {
+                rb.AddForce(acceleration * (lookBackwards ? -1 : 1) * direction, ForceMode.Acceleration);
+            }
 
-        if (inputSystem.Player.Decelerate.IsPressed())
-        {
-            rb.AddForce(-breakForce * (lookBackwards ? -1 : 1) * direction, ForceMode.Acceleration);
+            if (inputSystem.Player.Decelerate.IsPressed())
+            {
+                rb.AddForce(-breakForce * (lookBackwards ? -1 : 1) * direction, ForceMode.Acceleration);
+            }
         }
 
         //Direction switching
@@ -61,31 +72,30 @@ public class CharacterController : MonoBehaviour
         if (inputSystem.Player.Forward.triggered)
         {
             nextDirection = DirectionLogic.RelativeToAbsoluteDirection(relativeDirection, Direction.Top);
-        }
-        else if (inputSystem.Player.Backward.triggered)
-        {
-            nextDirection = DirectionLogic.RelativeToAbsoluteDirection(relativeDirection, Direction.Bottom);
+            RotateIndicator(Direction.Top);
         }
         else if (inputSystem.Player.TurnLeft.triggered)
         {
             nextDirection = DirectionLogic.RelativeToAbsoluteDirection(relativeDirection, Direction.Left);
-        }
+            RotateIndicator(Direction.Left);
+        } 
         else if (inputSystem.Player.TurnRight.triggered)
         {
             nextDirection = DirectionLogic.RelativeToAbsoluteDirection(relativeDirection, Direction.Right);
+            RotateIndicator(Direction.Right);
         }
-
-        //Look backwards ? 
-        if (inputSystem.Player.TurnAround.triggered)
+        
+        //Look backwards
+        if(inputSystem.Player.TurnAround.triggered)
             lookBackwards = !lookBackwards;
     }
 
     private void MovePlayer()
     {
-        //With input
-
+        if (transform.forward != direction) transform.forward = direction;
+        
         //If speed is opposite to forward, set it to 0
-        if (rb.velocity.normalized == (lookBackwards ? 1 : -1) * transform.forward)
+        if (rb.velocity.normalized == (lookBackwards ? 1 : -1) * direction)
             rb.velocity = Vector3.zero;
 
         //If wagon is accelerated : 
@@ -97,54 +107,81 @@ public class CharacterController : MonoBehaviour
             if (rb.velocity.magnitude < maxSpeed)
                 accelerated = false;
             else
-                rb.AddForce(-.05f * transform.forward, ForceMode.Acceleration);
+                rb.AddForce(-.05f * direction, ForceMode.Acceleration); //Natural friction to slow down the wagon
         }
         else if (rb.velocity.magnitude > maxSpeed)
             rb.velocity = rb.velocity.normalized * maxSpeed;
-
-
-        //Without input
-        /*if (accelerated)
-        {
-            if (rb.velocity.magnitude < maxSpeed)
-                accelerated = false;
-            else
-                rb.AddForce(-.05f * transform.forward, ForceMode.Acceleration);
-        }
-        else
-        {
-            rb.velocity = transform.forward * maxSpeed;
-        }*/
     }
 
+    private void HandleIntersection()
+    {
+        if (!nextIntersection) return;
+        
+        var intersectionPos = nextIntersection.transform.position;
+        
+        if((intersectionPos - transform.position).magnitude > .1f) return;
+        
+        if (nextIntersection.MatchDirection(nextDirection) && nextDirection !=
+            DirectionLogic.GetOpposite(DirectionLogic.GetRelativeDirection(direction)))
+        {
+            GetNextDirection(nextDirection);
+            nextIntersection = null;
+        }
+        else 
+        {
+            GameManager.EndGame(false);
+        }
+            
+        RotateIndicator(Direction.Top);
+        
+        transform.position = new Vector3(intersectionPos.x, transform.position.y, intersectionPos.z);
+      
+        
+        
+        
+        rb.velocity = rb.velocity.magnitude * direction;
+    }
+    
     private void GetNextDirection(Direction nextDirection)
     {
         switch (nextDirection)
         {
             case Direction.Top:
                 direction = Vector3.forward;
-                transform.forward = Vector3.forward;
                 break;
             case Direction.Bottom:
                 direction = Vector3.back;
-                transform.forward = Vector3.back;
                 break;
             case Direction.Left:
                 direction = Vector3.left;
-                transform.forward = Vector3.left;
                 break;
             case Direction.Right:
                 direction = Vector3.right;
-                transform.forward = Vector3.right;
+                break;
+            default:
                 break;
         }
+    }
 
-        rb.velocity = rb.velocity.magnitude * direction;
+    private void RotateIndicator(Direction direction)
+    {
+        switch (direction)
+        {
+            case Direction.Left:
+                directionIndicator.rotation = Quaternion.Euler(new Vector3(-45.0f, directionIndicator.eulerAngles.y, directionIndicator.eulerAngles.z));
+                break;
+            case Direction.Right:
+                directionIndicator.rotation = Quaternion.Euler(new Vector3(45.0f, directionIndicator.eulerAngles.y, directionIndicator.eulerAngles.z));
+                break;
+            default:
+                directionIndicator.rotation = Quaternion.Euler(new Vector3(0.0f, directionIndicator.eulerAngles.y, directionIndicator.eulerAngles.z));
+                break;
+        }
     }
 
     public void Accelerate(float value)
     {
-        rb.velocity += transform.forward * value;
+        rb.velocity += direction * value;
         accelerated = true;
     }
 
@@ -152,26 +189,18 @@ public class CharacterController : MonoBehaviour
     {
         return lookBackwards;
     }
-
+    
+    
     private void OnTriggerEnter(Collider other)
     {
         var intersection = other.GetComponent<Intersection>();
-        if (intersection)
-        {
-            if (intersection.MatchDirection(nextDirection) && nextDirection !=
-                DirectionLogic.GetOpposite(DirectionLogic.GetRelativeDirection(direction)))
-            {
-                Debug.Log($"Next direction : {nextDirection}");
-                GetNextDirection(nextDirection);
-            }
-            else
-            {
-                Debug.LogError("Wagon crashed !");
-                gameManager.EndGame(false);
-            }
+        if (intersection && !nextIntersection)
+            nextIntersection = intersection;
+    }
 
-            transform.position =
-                new Vector3(other.transform.position.x, transform.position.y, other.transform.position.z);
-        }
+    private void OnTriggerExit(Collider other)
+    {
+        if(nextIntersection)
+            nextIntersection = null;
     }
 }

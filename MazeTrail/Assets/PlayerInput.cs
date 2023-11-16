@@ -55,15 +55,6 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""Backward"",
-                    ""type"": ""Button"",
-                    ""id"": ""1bec117d-994c-4083-8cda-ac294ef50e1a"",
-                    ""expectedControlType"": ""Button"",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                },
-                {
                     ""name"": ""TurnLeft"",
                     ""type"": ""Button"",
                     ""id"": ""3824c51c-04b7-4bbe-bc36-8833ceb531b4"",
@@ -128,7 +119,7 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""034eec07-28d4-4f1c-bf3a-1731c61fdce4"",
-                    ""path"": ""<Keyboard>/q"",
+                    ""path"": ""<Keyboard>/a"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -172,7 +163,7 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""857ce368-df1a-4adf-bef2-f21198961613"",
-                    ""path"": ""<Keyboard>/z"",
+                    ""path"": ""<Keyboard>/w"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -182,30 +173,19 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""b4a59781-367d-4e9a-84ae-726293f8e00c"",
+                    ""id"": ""ef837818-4878-4c28-9c95-7f6c87f27430"",
                     ""path"": ""<Keyboard>/downArrow"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""Backward"",
+                    ""action"": ""TurnAround"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
                 {
                     ""name"": """",
-                    ""id"": ""b1f4e67b-ae29-4e84-8af8-b7c596e91fab"",
+                    ""id"": ""50b312f0-b808-4e37-b558-9f19cda4bdfe"",
                     ""path"": ""<Keyboard>/s"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Backward"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""ef837818-4878-4c28-9c95-7f6c87f27430"",
-                    ""path"": ""<Keyboard>/space"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -223,7 +203,6 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
         m_Player_Accelerate = m_Player.FindAction("Accelerate", throwIfNotFound: true);
         m_Player_Decelerate = m_Player.FindAction("Decelerate", throwIfNotFound: true);
         m_Player_Forward = m_Player.FindAction("Forward", throwIfNotFound: true);
-        m_Player_Backward = m_Player.FindAction("Backward", throwIfNotFound: true);
         m_Player_TurnLeft = m_Player.FindAction("TurnLeft", throwIfNotFound: true);
         m_Player_TurnRight = m_Player.FindAction("TurnRight", throwIfNotFound: true);
         m_Player_TurnAround = m_Player.FindAction("TurnAround", throwIfNotFound: true);
@@ -291,7 +270,6 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Accelerate;
     private readonly InputAction m_Player_Decelerate;
     private readonly InputAction m_Player_Forward;
-    private readonly InputAction m_Player_Backward;
     private readonly InputAction m_Player_TurnLeft;
     private readonly InputAction m_Player_TurnRight;
     private readonly InputAction m_Player_TurnAround;
@@ -302,7 +280,6 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
         public InputAction @Accelerate => m_Wrapper.m_Player_Accelerate;
         public InputAction @Decelerate => m_Wrapper.m_Player_Decelerate;
         public InputAction @Forward => m_Wrapper.m_Player_Forward;
-        public InputAction @Backward => m_Wrapper.m_Player_Backward;
         public InputAction @TurnLeft => m_Wrapper.m_Player_TurnLeft;
         public InputAction @TurnRight => m_Wrapper.m_Player_TurnRight;
         public InputAction @TurnAround => m_Wrapper.m_Player_TurnAround;
@@ -324,9 +301,6 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
             @Forward.started += instance.OnForward;
             @Forward.performed += instance.OnForward;
             @Forward.canceled += instance.OnForward;
-            @Backward.started += instance.OnBackward;
-            @Backward.performed += instance.OnBackward;
-            @Backward.canceled += instance.OnBackward;
             @TurnLeft.started += instance.OnTurnLeft;
             @TurnLeft.performed += instance.OnTurnLeft;
             @TurnLeft.canceled += instance.OnTurnLeft;
@@ -349,9 +323,6 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
             @Forward.started -= instance.OnForward;
             @Forward.performed -= instance.OnForward;
             @Forward.canceled -= instance.OnForward;
-            @Backward.started -= instance.OnBackward;
-            @Backward.performed -= instance.OnBackward;
-            @Backward.canceled -= instance.OnBackward;
             @TurnLeft.started -= instance.OnTurnLeft;
             @TurnLeft.performed -= instance.OnTurnLeft;
             @TurnLeft.canceled -= instance.OnTurnLeft;
@@ -383,7 +354,6 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
         void OnAccelerate(InputAction.CallbackContext context);
         void OnDecelerate(InputAction.CallbackContext context);
         void OnForward(InputAction.CallbackContext context);
-        void OnBackward(InputAction.CallbackContext context);
         void OnTurnLeft(InputAction.CallbackContext context);
         void OnTurnRight(InputAction.CallbackContext context);
         void OnTurnAround(InputAction.CallbackContext context);
