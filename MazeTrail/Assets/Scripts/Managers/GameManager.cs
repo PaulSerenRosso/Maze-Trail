@@ -1,45 +1,69 @@
-using System;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
-    private static GameManager instance;
-
     [SerializeField] private UIManager uiManager;
-    [SerializeField] private GameObject player;
     [SerializeField] private Camera camera;
-    
-    private void Awake()
+    [SerializeField] private MazeManager mazeManager;
+    [SerializeField] private float timer;
+
+    private void Start()
     {
-        Init();
+        var size = PlayerPrefs.GetInt("MazeSize", 10);
+        mazeManager.GenerateMaze(size);
     }
 
-    private void Init()
+    private void Update()
     {
-        if (!instance) instance = this;
+        if (timer == 0) return;
+        if (timer > 0)
+        {
+            timer -= Time.deltaTime;
+            if (timer <= 0)
+            {
+                EndGame(false);
+                timer = 0;
+            }
+        }
+
+        var time = timer % 60;
+        if (time < 10)
+        {
+            uiManager.SetTimerText(Mathf.FloorToInt(timer / 60) + ":" +"0"+Mathf.FloorToInt(time));
+        }
+        else
+        {
+            uiManager.SetTimerText(Mathf.FloorToInt(timer / 60) + ":" + Mathf.FloorToInt(time));
+        }
+       
     }
 
-    public static void EndGame(bool win)
+    public void SetTimer(float time)
+    {
+        timer = time;
+    }
+
+    public void EndGame(bool win)
     {
         if (!win) DestroyPlayer();
-        else instance.camera.GetComponent<CameraController>().UnlinkTarget();
-        instance.uiManager.PopEndMenu(win ? "You won !" : "You Lost..");
+        else camera.GetComponent<CameraController>().UnlinkTarget();
+        uiManager.PopEndMenu(win ? "You won !" : "You Lost..");
     }
-    
-    public static void ReturnToMenuFromGame()
+
+    public void ReturnToMenuFromGame()
     {
         SceneManager.LoadScene(0); //assume menu is scene 0
     }
 
-    public static void Restart(bool newMap)
+    public void Restart(bool newMap)
     {
-        
+        SceneManager.LoadScene(1);
     }
 
-    public static void DestroyPlayer()
+    public void DestroyPlayer()
     {
-        instance.camera.GetComponent<CameraController>().UnlinkTarget();
-        Destroy(instance.player);
+        camera.GetComponent<CameraController>().UnlinkTarget();
+        Destroy(mazeManager.Player.gameObject);
     }
 }

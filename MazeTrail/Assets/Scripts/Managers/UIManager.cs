@@ -1,14 +1,17 @@
-using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public class UIManager : MonoBehaviour
 {
     [SerializeField] private GameObject endMenu;
     [SerializeField] private TMP_Text endText;
-
+    [SerializeField] private TMP_Text timerText;
+    
+    public void SetTimerText(string text)
+    {
+        timerText.text = text;
+    }
+    
     public void PopEndMenu(string endText)
     {
         endMenu.SetActive(true);

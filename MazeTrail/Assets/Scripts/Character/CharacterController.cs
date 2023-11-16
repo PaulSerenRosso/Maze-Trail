@@ -11,11 +11,12 @@ public class CharacterController : MonoBehaviour
     private Vector3 direction = Vector3.forward;
 
     private Direction nextDirection = Direction.Top;
-    
+
     private bool accelerated = false;
     private bool lookBackwards = false;
-    
+
     private PlayerInput inputSystem;
+    private GameManager gameManager;
 
     void Awake()
     {
@@ -28,13 +29,13 @@ public class CharacterController : MonoBehaviour
         inputSystem.Player.Enable();
     }
 
-    public void Init(Vector3 startDirection)
+    public void Init(Vector3 startDirection, GameManager manager)
     {
-        Debug.Log($"Init: {startDirection}");
         direction = startDirection;
         nextDirection = DirectionLogic.GetRelativeDirection(startDirection);
+        gameManager = manager;
     }
-    
+
     void Update()
     {
         GetInput();
@@ -53,10 +54,10 @@ public class CharacterController : MonoBehaviour
         {
             rb.AddForce(-breakForce * (lookBackwards ? -1 : 1) * direction, ForceMode.Acceleration);
         }
-        
+
         //Direction switching
         var relativeDirection = DirectionLogic.GetRelativeDirection(direction);
-        
+
         if (inputSystem.Player.Forward.triggered)
         {
             nextDirection = DirectionLogic.RelativeToAbsoluteDirection(relativeDirection, Direction.Top);
@@ -68,21 +69,21 @@ public class CharacterController : MonoBehaviour
         else if (inputSystem.Player.TurnLeft.triggered)
         {
             nextDirection = DirectionLogic.RelativeToAbsoluteDirection(relativeDirection, Direction.Left);
-        } 
+        }
         else if (inputSystem.Player.TurnRight.triggered)
         {
             nextDirection = DirectionLogic.RelativeToAbsoluteDirection(relativeDirection, Direction.Right);
         }
-        
+
         //Look backwards ? 
-        if(inputSystem.Player.TurnAround.triggered)
-        lookBackwards = !lookBackwards;
+        if (inputSystem.Player.TurnAround.triggered)
+            lookBackwards = !lookBackwards;
     }
-    
+
     private void MovePlayer()
     {
         //With input
-        
+
         //If speed is opposite to forward, set it to 0
         if (rb.velocity.normalized == (lookBackwards ? 1 : -1) * transform.forward)
             rb.velocity = Vector3.zero;
@@ -100,8 +101,8 @@ public class CharacterController : MonoBehaviour
         }
         else if (rb.velocity.magnitude > maxSpeed)
             rb.velocity = rb.velocity.normalized * maxSpeed;
-        
-        
+
+
         //Without input
         /*if (accelerated)
         {
@@ -150,15 +151,15 @@ public class CharacterController : MonoBehaviour
     public bool IsLookingBackwards()
     {
         return lookBackwards;
-        
     }
-    
+
     private void OnTriggerEnter(Collider other)
     {
         var intersection = other.GetComponent<Intersection>();
         if (intersection)
         {
-            if (intersection.MatchDirection(nextDirection) && nextDirection != DirectionLogic.GetOpposite(DirectionLogic.GetRelativeDirection(direction)))
+            if (intersection.MatchDirection(nextDirection) && nextDirection !=
+                DirectionLogic.GetOpposite(DirectionLogic.GetRelativeDirection(direction)))
             {
                 Debug.Log($"Next direction : {nextDirection}");
                 GetNextDirection(nextDirection);
@@ -166,10 +167,11 @@ public class CharacterController : MonoBehaviour
             else
             {
                 Debug.LogError("Wagon crashed !");
-                GameManager.EndGame(false);
+                gameManager.EndGame(false);
             }
-            
-            transform.position = new Vector3(other.transform.position.x, transform.position.y, other.transform.position.z);
+
+            transform.position =
+                new Vector3(other.transform.position.x, transform.position.y, other.transform.position.z);
         }
     }
 }
