@@ -7,8 +7,11 @@ public class CharacterController : MonoBehaviour
 {
     [SerializeField] private float acceleration;
     [SerializeField] private float maxSpeed;
+    [SerializeField] private float acceleratorMaxFactor = 1.0f;
     [SerializeField] private float breakForce;
-
+    
+    private float maxSpeedAccelerated;
+    
     [SerializeField] private Transform directionIndicator;
     
     private Rigidbody rb;
@@ -29,6 +32,7 @@ public class CharacterController : MonoBehaviour
     {
         rb = GetComponent<Rigidbody>();
         inputSystem = new PlayerInput();
+        maxSpeedAccelerated = maxSpeed * acceleratorMaxFactor;
     }
 
     private void OnEnable()
@@ -112,8 +116,11 @@ public class CharacterController : MonoBehaviour
             else
                 rb.AddForce(-.05f * direction, ForceMode.Acceleration); //Natural friction to slow down the wagon
         }
-        else if (rb.velocity.magnitude > maxSpeed)
-            rb.velocity = rb.velocity.normalized * maxSpeed;
+
+        var contextMaxSpeed = (accelerated ? maxSpeedAccelerated : maxSpeed);
+        
+        if (rb.velocity.magnitude > contextMaxSpeed)
+            rb.velocity = rb.velocity.normalized * contextMaxSpeed;
     }
 
     private void HandleIntersection()
