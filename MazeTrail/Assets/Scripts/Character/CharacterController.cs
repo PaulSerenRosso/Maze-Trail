@@ -86,8 +86,11 @@ public class CharacterController : MonoBehaviour
         }
         
         //Look backwards
-        if(inputSystem.Player.TurnAround.triggered)
-            lookBackwards = !lookBackwards;
+        if (inputSystem.Player.TurnAround.triggered)
+        {
+            direction = -direction;
+            //lookBackwards = !lookBackwards;
+        }
     }
 
     private void MovePlayer()
@@ -129,7 +132,7 @@ public class CharacterController : MonoBehaviour
         }
         else 
         {
-            GameManager.EndGame(false);
+            gameManager.EndGame(false);
         }
             
         RotateIndicator(Direction.Top);
