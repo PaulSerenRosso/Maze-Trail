@@ -9,6 +9,7 @@ public class CellMaze : MonoBehaviour
     public List<Neighbour> StaticNeighbours = new();
     public GameObject floor;
     public MeshRenderer floorMR;
+    public MeshFilter floorMF;
     
     public SerializableDictionary<Direction, WallCell> walls = new();
 

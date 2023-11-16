@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEditor.Rendering;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -17,6 +16,8 @@ public class MazeManager : MonoBehaviour
     [SerializeField] private GameObject cellsParent;
     [SerializeField] private WallCell wallPrefab;
     [SerializeField] private GameObject wallsParent;
+    [SerializeField] private GameObject railsParent;
+    [SerializeField] private GameObject propsParent;
     [SerializeField] private List<CellMaze> recursivePathCells = new();
     [SerializeField] private SerializableDictionary<RailShape, GameObject> rails;
     [SerializeField] private int maxLoopSize = 5;
@@ -34,6 +35,9 @@ public class MazeManager : MonoBehaviour
     [SerializeField] private float factorT = 0.75f;
     [SerializeField] private float factorX = 1.0f;
     [SerializeField] private Biome[] biomes;
+    [SerializeField] private MeshMergeManager meshMergeManagerWalls;
+    [SerializeField] private MeshMergeManager meshMergeManagerFloors;
+    [SerializeField] private MeshMergeManager meshMergeManagerProps;
 
     private float cellSize;
     private int totalCells;
@@ -68,6 +72,8 @@ public class MazeManager : MonoBehaviour
                 var cell = Instantiate(cellPrefab, new Vector3(x * cellSize, 0, y * cellSize), Quaternion.identity,
                     cellsParent.transform);
                 cell.name = $"Cell {(y * xSize) + x}";
+                meshMergeManagerFloors.meshFilters.Add(cell.floorMF);
+                meshMergeManagerFloors.meshRenderers.Add(cell.floorMR);
 
                 /* WALLS INSTANTIATION */
                 if (y == 0)
@@ -114,6 +120,8 @@ public class MazeManager : MonoBehaviour
         var wall = Instantiate(wallPrefab, wallsParent.transform);
         wall.transform.localScale = new Vector3(cellSize, wall.transform.localScale.y,
             wall.transform.localScale.z);
+        meshMergeManagerWalls.meshFilters.Add(wall.meshFilter);
+        meshMergeManagerWalls.meshRenderers.Add(wall.meshRenderer);
 
         var tempPos = new Vector3(0, 0, 0);
 
@@ -146,7 +154,7 @@ public class MazeManager : MonoBehaviour
 
         if (cell.DynamicNeighbours.Count == 0 && recursivePathCells.Count != 0)
         {
-            cell.floorMR.material.color = Color.blue;
+            // cell.floorMR.material.color = Color.blue;
             RemoveDynamicNeighbourFromStaticNeighbour(cell);
             var previousCell = recursivePathCells[^1];
             recursivePathCells.RemoveAt(recursivePathCells.Count - 1);
@@ -167,9 +175,11 @@ public class MazeManager : MonoBehaviour
 
     private IEnumerator CreatePath(CellMaze cell)
     {
-        cell.floorMR.material.color = Color.white;
+        // cell.floorMR.material.color = Color.white;
         var neighbourCellTuple = cell.DynamicNeighbours[Random.Range(0, cell.DynamicNeighbours.Count)];
         Destroy(cell.walls[neighbourCellTuple.direction].gameObject);
+        meshMergeManagerWalls.meshFilters.Remove(cell.walls[neighbourCellTuple.direction].meshFilter);
+        meshMergeManagerWalls.meshRenderers.Remove(cell.walls[neighbourCellTuple.direction].meshRenderer);
         AddInterpolatedRails(cell.transform.position, neighbourCellTuple.cell.transform.position);
         cell.walls[neighbourCellTuple.direction] = null;
         neighbourCellTuple.cell.walls[GetOppositeDirection(neighbourCellTuple.direction)] = null;
@@ -255,6 +265,8 @@ public class MazeManager : MonoBehaviour
             }
 
             Destroy(cellsU[i].walls[oppositeDirection].gameObject);
+            meshMergeManagerWalls.meshFilters.Remove(cellsU[i].walls[oppositeDirection].meshFilter);
+            meshMergeManagerWalls.meshRenderers.Remove(cellsU[i].walls[oppositeDirection].meshRenderer);
             cellsU[i].walls[oppositeDirection] = null;
             var neighbourCell = cellsU[i].GetNeighbourStatic(oppositeDirection);
             AddInterpolatedRails(cellsU[i].transform.position, neighbourCell.transform.position);
@@ -317,6 +329,8 @@ public class MazeManager : MonoBehaviour
                            direction * (i * cellSize + (cellSize / 2));
             var cell = Instantiate(cellPrefab, position, Quaternion.identity, cellsParent.transform);
             cell.name = $"CellEntry";
+            meshMergeManagerFloors.meshFilters.Add(cell.floorMF);
+            meshMergeManagerFloors.meshRenderers.Add(cell.floorMR);
 
             if (i == 0)
             {
@@ -382,24 +396,24 @@ public class MazeManager : MonoBehaviour
                       
                         if (!cellsX.Contains(currentX) && !cellsY.Contains(currentY))
                         {
-                            rail = Instantiate(acceleratorPrefab, cell.transform.position, Quaternion.identity, cell.transform);
+                            rail = Instantiate(acceleratorPrefab, cell.transform.position, Quaternion.identity, railsParent.transform);
                             cellsX.Add(currentX);
                             cellsY.Add(currentY);
                         }
                         else
                         {
-                            rail = Instantiate(rails[shape], cell.transform.position, Quaternion.identity, cell.transform);
+                            rail = Instantiate(rails[shape], cell.transform.position, Quaternion.identity, railsParent.transform);
                         }
                 }
                 
                 else
                 {
-                    rail = Instantiate(rails[shape], cell.transform.position, Quaternion.identity, cell.transform);
+                    rail = Instantiate(rails[shape], cell.transform.position, Quaternion.identity, railsParent.transform);
                 }
             }
             else
             {
-                rail = Instantiate(rails[shape], cell.transform.position, Quaternion.identity, cell.transform);
+                rail = Instantiate(rails[shape], cell.transform.position, Quaternion.identity, railsParent.transform);
             }
 
             switch (shape)
@@ -416,7 +430,7 @@ public class MazeManager : MonoBehaviour
                     intersectionsLCount++;
                     var directions = new List<Direction>();
                     intersection = Instantiate(intersectionPrefab, cell.transform.position, Quaternion.identity,
-                        cell.transform);
+                        rail.transform);
                     foreach (var wall in cell.walls)
                     {
                         if (!wall.Value)
@@ -458,7 +472,7 @@ public class MazeManager : MonoBehaviour
                 case RailShape.ShapeT:
                     intersectionsTCount++;
                     intersection = Instantiate(intersectionPrefab, cell.transform.position, Quaternion.identity,
-                        cell.transform);
+                        rail.transform);
                     foreach (var wall in cell.walls)
                     {
                         if (wall.Value)
@@ -496,7 +510,7 @@ public class MazeManager : MonoBehaviour
 
                 case RailShape.ShapeU:
                     intersection = Instantiate(intersectionPrefab, cell.transform.position, Quaternion.identity,
-                        cell.transform);
+                        rail.transform);
                     foreach (var wall in cell.walls)
                     {
                         if (!wall.Value)
@@ -521,7 +535,7 @@ public class MazeManager : MonoBehaviour
                 case RailShape.ShapeX:
                     intersectionsXCount++;
                     intersection = Instantiate(intersectionPrefab, cell.transform.position, Quaternion.identity,
-                        cell.transform);
+                        rail.transform);
                     intersection.availableDirections.Add(Direction.Right);
                     intersection.availableDirections.Add(Direction.Bottom);
                     intersection.availableDirections.Add(Direction.Left);
@@ -533,7 +547,7 @@ public class MazeManager : MonoBehaviour
         }
 
         StartCoroutine(CreateBiome());
-        CreatePlayer();
+        
     }
 
     private void CreatePlayer()
@@ -555,6 +569,14 @@ public class MazeManager : MonoBehaviour
         var time = (intersectionsXCount * factorX + intersectionsTCount * factorT + intersectionsLCount * factorL) *
                    xSize;
         gameManager.SetTimer(time);
+        
+        meshMergeManagerProps.MergeMeshes();
+        meshMergeManagerWalls.MergeMeshes();
+        meshMergeManagerFloors.MergeMeshes();
+        
+        Destroy(propsParent);
+        Destroy(wallsParent);
+        Destroy(cellsParent);
     }
 
     private IEnumerator CreateBiome()
@@ -578,8 +600,10 @@ public class MazeManager : MonoBehaviour
                                 .normalized;
                             var prop = Instantiate(biome.prefabs[Random.Range(0, biome.prefabs.Count)],
                                 wall.transform.position + direction * (cellSize / 4),
-                                Quaternion.LookRotation(direction));
+                                Quaternion.LookRotation(direction), propsParent.transform);
                             prop.transform.parent = wall.transform;
+                            meshMergeManagerProps.meshRenderers.Add(prop.meshRenderer);
+                            meshMergeManagerProps.meshFilters.Add(prop.meshFilter);
                             yield return new WaitForSeconds(timer);
                             break;
                         }
@@ -587,6 +611,7 @@ public class MazeManager : MonoBehaviour
                 }
             }
         }
+        CreatePlayer();
     }
 
     private void AddInterpolatedRails(Vector3 pos, Vector3 pos2)
@@ -597,7 +622,7 @@ public class MazeManager : MonoBehaviour
         {
             var interpolatedPos = pos + direction * (i + 1);
             var interpolatedRail = Instantiate(rails[RailShape.ShapeI], interpolatedPos, Quaternion.identity,
-                cellsParent.transform);
+                railsParent.transform);
             interpolatedRail.transform.LookAt(pos2);
         }
     }

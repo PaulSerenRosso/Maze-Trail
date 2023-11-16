@@ -48,6 +48,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   neighbours: []
   isClosingWall: 0
+  meshRenderer: {fileID: 3978357626582265336}
+  meshFilter: {fileID: 3978357626582891924}
 --- !u!1 &7595893414461889152
 GameObject:
   m_ObjectHideFlags: 0
@@ -225,6 +227,18 @@ PrefabInstance:
 --- !u!4 &3978357626579985614 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 448950, guid: 76d0990ce6d878544bdb1bc9f388dbce,
+    type: 3}
+  m_PrefabInstance: {fileID: 3978357626579910008}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &3978357626582265336 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 2363520, guid: 76d0990ce6d878544bdb1bc9f388dbce,
+    type: 3}
+  m_PrefabInstance: {fileID: 3978357626579910008}
+  m_PrefabAsset: {fileID: 0}
+--- !u!33 &3978357626582891924 stripped
+MeshFilter:
+  m_CorrespondingSourceObject: {fileID: 3309804, guid: 76d0990ce6d878544bdb1bc9f388dbce,
     type: 3}
   m_PrefabInstance: {fileID: 3978357626579910008}
   m_PrefabAsset: {fileID: 0}
