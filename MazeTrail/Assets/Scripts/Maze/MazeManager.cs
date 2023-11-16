@@ -162,7 +162,7 @@ public class MazeManager : MonoBehaviour
             return;
         }
 
-        if (recursivePathCells.Count != 0)
+        if (cell.DynamicNeighbours.Count != 0)
         {
             StartCoroutine(CreatePath(cell));
         }
@@ -291,7 +291,7 @@ public class MazeManager : MonoBehaviour
         var cell = cells[Random.Range(0, totalCells)];
         StartCoroutine(CreatePath(cell));
     }
-
+    
     private void CreateEntry(Direction randomEntry, bool isExit = false)
     {
         var randomX = Random.Range(0, xSize);
@@ -322,7 +322,7 @@ public class MazeManager : MonoBehaviour
                 pos = new Vector2(0, randomY);
                 break;
         }
-
+        
         for (int i = 0; i < numberOfCellsEntries; i++)
         {
             var position = cells[index].walls[randomEntry].transform.position +
