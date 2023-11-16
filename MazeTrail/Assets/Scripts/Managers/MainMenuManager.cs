@@ -19,12 +19,13 @@ public class MainMenuManager : MonoBehaviour
     private void Awake()
     {
         currentMenu = mainMenu;
+        SetMazeSize(9.0f);
     }
 
     public void SetMazeSize(float value)
     {
-        PlayerPrefs.SetInt("MazeSize", Mathf.FloorToInt(value));
-        sizeText.text = "Size : " + value;
+        PlayerPrefs.SetInt("MazeSize", Mathf.FloorToInt(value) * 3);
+        sizeText.text = "Size : " + value * 3;
     }
     
     public void StartGame()

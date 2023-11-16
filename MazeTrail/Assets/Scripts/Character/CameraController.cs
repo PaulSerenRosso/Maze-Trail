@@ -27,7 +27,7 @@ public class CameraController : MonoBehaviour
             );
         
         transform.position = Vector3.Lerp(transform.position, (target.position - offsetVector), lerpT);
-        transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, lerpT);
+        transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, lerpT + lerpT/10);
     }
 
     public void UnlinkTarget()
