@@ -148,7 +148,7 @@ public class MazeManager : MonoBehaviour
 
         if (cell.DynamicNeighbours.Count == 0 && recursivePathCells.Count != 0)
         {
-            // cell.floorMR.material.color = Color.blue;
+            cell.floorMR.material.color = Color.blue;
             RemoveDynamicNeighbourFromStaticNeighbour(cell);
             var previousCell = recursivePathCells[^1];
             recursivePathCells.RemoveAt(recursivePathCells.Count - 1);
@@ -169,7 +169,7 @@ public class MazeManager : MonoBehaviour
 
     private IEnumerator CreatePath(CellMaze cell)
     {
-        // cell.floorMR.material.color = Color.white;
+        cell.floorMR.material.color = Color.red;
         var neighbourCellTuple = cell.DynamicNeighbours[Random.Range(0, cell.DynamicNeighbours.Count)];
         Destroy(cell.walls[neighbourCellTuple.direction].gameObject);
         meshMergeManagerWalls.meshFilters.Remove(cell.walls[neighbourCellTuple.direction].meshFilter);
@@ -512,13 +512,13 @@ public class MazeManager : MonoBehaviour
                             switch (wall.Key)
                             {
                                 case Direction.Right:
-                                    rail.transform.Rotate(Vector3.up, 90);
+                                    rail.transform.Rotate(Vector3.up, -90);
                                     break;
-                                case Direction.Bottom:
+                                case Direction.Top:
                                     rail.transform.Rotate(Vector3.up, 180);
                                     break;
                                 case Direction.Left:
-                                    rail.transform.Rotate(Vector3.up, -90);
+                                    rail.transform.Rotate(Vector3.up, 90);
                                     break;
                             }
                         }
