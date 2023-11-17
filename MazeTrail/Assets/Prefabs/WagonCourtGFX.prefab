@@ -799,10 +799,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8cf42c3f72550b14cb3dba67cab66f2a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  acceleration: 0.5
-  maxSpeed: 2.5
-  acceleratorMaxFactor: 3
-  breakForce: 0.1
+  acceleration: 1
+  maxSpeed: 4
+  acceleratorMaxFactor: 2.3
+  breakForce: 0.4
   directionIndicator: {fileID: 1146837381407402992}
 --- !u!114 &83153437775249961
 MonoBehaviour:

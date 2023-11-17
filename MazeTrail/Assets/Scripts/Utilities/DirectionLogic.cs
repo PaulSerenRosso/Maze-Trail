@@ -64,39 +64,19 @@ public class DirectionLogic
     //If clockwise == true, rotate right, else rotate left
     public static Direction GetDirectionRotated(Direction direction, bool clockwise)
     {
-        if (clockwise)
+        switch (direction)
         {
-            switch (direction)
-            {
-                case Direction.Top:
-                    return Direction.Right;
-                case Direction.Bottom:
-                    return Direction.Left;
-                case Direction.Left:
-                    return Direction.Top;
-                case Direction.Right:
-                    return Direction.Bottom;
-                default:
-                    break;
+            case Direction.Top:
+                return (clockwise ? Direction.Right : Direction.Left);
+            case Direction.Bottom:
+                return (clockwise ? Direction.Left : Direction.Right);
+            case Direction.Left:
+                return (clockwise ? Direction.Top : Direction.Bottom);
+            case Direction.Right:
+                return (clockwise ? Direction.Bottom : Direction.Top);
+            default:
+                break;
             }
-        }
-        else
-        {
-            switch (direction)
-            {
-                case Direction.Top:
-                    return Direction.Left;
-                case Direction.Bottom:
-                    return Direction.Right;
-                case Direction.Left:
-                    return Direction.Bottom;
-                case Direction.Right:
-                    return Direction.Top;
-                default:
-                    break;
-            }
-        }
-
         return Direction.None;
     }
     

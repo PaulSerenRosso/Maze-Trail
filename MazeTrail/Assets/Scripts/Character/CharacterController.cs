@@ -20,7 +20,6 @@ public class CharacterController : MonoBehaviour
     private Direction nextDirection = Direction.Top;
     
     private bool accelerated;
-    private bool lookBackwards;
     private bool lockControls;
    
     private Intersection nextIntersection;
@@ -61,12 +60,12 @@ public class CharacterController : MonoBehaviour
             //Acceleration & deceleration
             if (inputSystem.Player.Accelerate.IsPressed() && !accelerated)
             {
-                rb.AddForce(acceleration * (lookBackwards ? -1 : 1) * direction, ForceMode.Acceleration);
+                rb.AddForce(acceleration * direction, ForceMode.Acceleration);
             }
 
             if (inputSystem.Player.Decelerate.IsPressed())
             {
-                rb.AddForce(-breakForce * (lookBackwards ? -1 : 1) * direction, ForceMode.Acceleration);
+                rb.AddForce(-breakForce * direction, ForceMode.Acceleration);
             }
         }
 
@@ -89,11 +88,12 @@ public class CharacterController : MonoBehaviour
             RotateIndicator(Direction.Right);
         }
         
-        //Look backwards
+        //Reverse
         if (inputSystem.Player.TurnAround.triggered)
         {
             direction = -direction;
-            //lookBackwards = !lookBackwards;
+            rb.velocity = Vector3.zero;
+            nextDirection = DirectionLogic.GetOpposite(nextDirection);
         }
     }
 
@@ -102,7 +102,7 @@ public class CharacterController : MonoBehaviour
         if (transform.forward != direction) transform.forward = direction;
         
         //If speed is opposite to forward, set it to 0
-        if (rb.velocity.normalized == (lookBackwards ? 1 : -1) * direction)
+        if (rb.velocity.normalized == -direction.normalized)
             rb.velocity = Vector3.zero;
 
         //If wagon is accelerated : 
@@ -128,28 +128,32 @@ public class CharacterController : MonoBehaviour
         if (!nextIntersection) return;
         
         var intersectionPos = nextIntersection.transform.position;
-        
-        if((intersectionPos - transform.position).magnitude > .1f) return;
+
+        //Check only on a single axis to prevent "dodging" the intersection
+        if (direction.x != 0)
+            if((intersectionPos.x - transform.position.x) > .05f) return;
+        else
+            if((intersectionPos.y - transform.position.y) > .05f) return;
         
         if (nextIntersection.MatchDirection(nextDirection) && nextDirection !=
             DirectionLogic.GetOpposite(DirectionLogic.GetRelativeDirection(direction)))
         {
+            var oldDir = direction;
+            
             GetNextDirection(nextDirection);
+            
+            if(oldDir != direction)
+                transform.position = new Vector3(intersectionPos.x, transform.position.y, intersectionPos.z);
+            
+            rb.velocity = rb.velocity.magnitude * direction;
+            RotateIndicator(Direction.Top);
+           
             nextIntersection = null;
         }
         else 
         {
             gameManager.EndGame(false);
         }
-            
-        RotateIndicator(Direction.Top);
-        
-        transform.position = new Vector3(intersectionPos.x, transform.position.y, intersectionPos.z);
-      
-        
-        
-        
-        rb.velocity = rb.velocity.magnitude * direction;
     }
     
     private void GetNextDirection(Direction nextDirection)
@@ -195,12 +199,6 @@ public class CharacterController : MonoBehaviour
         accelerated = true;
     }
 
-    public bool IsLookingBackwards()
-    {
-        return lookBackwards;
-    }
-    
-    
     private void OnTriggerEnter(Collider other)
     {
         var intersection = other.GetComponent<Intersection>();
