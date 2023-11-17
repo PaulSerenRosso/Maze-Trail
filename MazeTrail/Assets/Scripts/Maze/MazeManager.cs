@@ -544,7 +544,10 @@ public class MazeManager : MonoBehaviour
 
     private void CreatePlayer()
     {
-        var midCell = cells[Mathf.FloorToInt(totalCells / 2 + xSize / 2)];
+        var mid = (float)totalCells / 2;
+        if (mid % 2 == 0) mid += xSize / 2;
+        
+        var midCell = cells[Mathf.FloorToInt(mid)];
         CellMaze neighbourCell = null;
         foreach (var wall in midCell.walls)
         {

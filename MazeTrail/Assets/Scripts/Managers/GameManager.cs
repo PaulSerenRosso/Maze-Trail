@@ -1,3 +1,5 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -8,9 +10,11 @@ public class GameManager : MonoBehaviour
     [SerializeField] private MazeManager mazeManager;
     [SerializeField] private float timer;
 
+    private bool isFinish;
+
     private void Start()
     {
-        var size = PlayerPrefs.GetInt("MazeSize", 10);
+        var size = PlayerPrefs.GetInt("MazeSize", 9);
         mazeManager.GenerateMaze(size);
     }
 
@@ -45,9 +49,11 @@ public class GameManager : MonoBehaviour
 
     public void EndGame(bool win)
     {
-        if (!win) DestroyPlayer();
-        else camera.GetComponent<CameraController>().UnlinkTarget();
+        mazeManager.Player.GetComponent<Collider>().enabled = false;
+        camera.GetComponent<CameraController>().UnlinkTarget();
         uiManager.PopEndMenu(win ? "You won !" : "You Lost..");
+        if (!isFinish) StartCoroutine(DestroyPlayer());
+        isFinish = true;
     }
 
     public void ReturnToMenuFromGame()
@@ -60,9 +66,9 @@ public class GameManager : MonoBehaviour
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
-    public void DestroyPlayer()
+    public IEnumerator DestroyPlayer()
     {
-        camera.GetComponent<CameraController>().UnlinkTarget();
+        yield return new WaitForSeconds(1.0f);
         Destroy(mazeManager.Player.gameObject);
     }
 }
