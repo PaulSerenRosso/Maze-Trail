@@ -30,13 +30,12 @@ public class GameManager : MonoBehaviour
         var time = timer % 60;
         if (time < 10)
         {
-            uiManager.SetTimerText(Mathf.FloorToInt(timer / 60) + ":" +"0"+Mathf.FloorToInt(time));
+            uiManager.SetTimerText(Mathf.FloorToInt(timer / 60) + ":" + "0" + Mathf.FloorToInt(time));
         }
         else
         {
             uiManager.SetTimerText(Mathf.FloorToInt(timer / 60) + ":" + Mathf.FloorToInt(time));
         }
-       
     }
 
     public void SetTimer(float time)
@@ -53,10 +52,10 @@ public class GameManager : MonoBehaviour
 
     public void ReturnToMenuFromGame()
     {
-        SceneManager.LoadScene(0); //assume menu is scene 0
+        SceneManager.LoadScene(0);
     }
 
-    public void Restart(bool newMap)
+    public void Restart()
     {
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }

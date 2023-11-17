@@ -29,7 +29,11 @@ public class MazeManager : MonoBehaviour
     [SerializeField] private Exit exitPrefab;
     [SerializeField] private GameObject acceleratorPrefab;
     [SerializeField] private CameraController cameraController;
-    [SerializeField] private float timer = 0.01f;
+    [SerializeField] private float timerPath = 0.01f;
+    [SerializeField] private float timerCycle = 0.01f;
+    [SerializeField] private float timerEntries = 0.01f;
+    [SerializeField] private float timerRails = 0.01f;
+    [SerializeField] private float timerBiome = 0.01f;
     [SerializeField] private GameManager gameManager;
     [SerializeField] private float factorL = 0.5f;
     [SerializeField] private float factorT = 0.75f;
@@ -49,7 +53,6 @@ public class MazeManager : MonoBehaviour
     {
         xSize = size;
         ySize = size;
-        timer /= size;
         maxLoopSize = size / 2;
         intersectionsLCount = 0;
         intersectionsTCount = 0;
@@ -190,7 +193,7 @@ public class MazeManager : MonoBehaviour
 
         cell.DynamicNeighbours.Remove(neighbourCellTuple);
         recursivePathCells.Add(cell);
-        yield return new WaitForSeconds(timer);
+        yield return new WaitForSeconds(timerPath);
         RecursivePathMaze(neighbourCellTuple.cell);
     }
 
@@ -271,7 +274,7 @@ public class MazeManager : MonoBehaviour
             var neighbourCell = cellsU[i].GetNeighbourStatic(oppositeDirection);
             AddInterpolatedRails(cellsU[i].transform.position, neighbourCell.transform.position);
             neighbourCell.walls[GetOppositeDirection(oppositeDirection)] = null;
-            yield return new WaitForSeconds(timer);
+            yield return new WaitForSeconds(timerCycle);
         }
 
         StartCoroutine(GenerateRails());
@@ -285,13 +288,13 @@ public class MazeManager : MonoBehaviour
         {
             if (randomExit == (Direction)i) CreateEntry(randomExit, true);
             else CreateEntry((Direction)i);
-            yield return new WaitForSeconds(timer);
+            yield return new WaitForSeconds(timerEntries);
         }
 
         var cell = cells[Random.Range(0, totalCells)];
         StartCoroutine(CreatePath(cell));
     }
-    
+
     private void CreateEntry(Direction randomEntry, bool isExit = false)
     {
         var randomX = Random.Range(0, xSize);
@@ -322,7 +325,7 @@ public class MazeManager : MonoBehaviour
                 pos = new Vector2(0, randomY);
                 break;
         }
-        
+
         for (int i = 0; i < numberOfCellsEntries; i++)
         {
             var position = cells[index].walls[randomEntry].transform.position +
@@ -388,27 +391,29 @@ public class MazeManager : MonoBehaviour
             GameObject rail = null;
             if (shape == RailShape.ShapeI)
             {
-             
                 if (Random.Range(0.0f, 1.0f) > 0.5f)
                 {
-                        var currentX = index % xSize;
-                        var currentY = Mathf.FloorToInt((float)index / xSize);
-                      
-                        if (!cellsX.Contains(currentX) && !cellsY.Contains(currentY))
-                        {
-                            rail = Instantiate(acceleratorPrefab, cell.transform.position, Quaternion.identity, railsParent.transform);
-                            cellsX.Add(currentX);
-                            cellsY.Add(currentY);
-                        }
-                        else
-                        {
-                            rail = Instantiate(rails[shape], cell.transform.position, Quaternion.identity, railsParent.transform);
-                        }
+                    var currentX = index % xSize;
+                    var currentY = Mathf.FloorToInt((float)index / xSize);
+
+                    if (!cellsX.Contains(currentX) && !cellsY.Contains(currentY))
+                    {
+                        rail = Instantiate(acceleratorPrefab, cell.transform.position, Quaternion.identity,
+                            railsParent.transform);
+                        cellsX.Add(currentX);
+                        cellsY.Add(currentY);
+                    }
+                    else
+                    {
+                        rail = Instantiate(rails[shape], cell.transform.position, Quaternion.identity,
+                            railsParent.transform);
+                    }
                 }
-                
+
                 else
                 {
-                    rail = Instantiate(rails[shape], cell.transform.position, Quaternion.identity, railsParent.transform);
+                    rail = Instantiate(rails[shape], cell.transform.position, Quaternion.identity,
+                        railsParent.transform);
                 }
             }
             else
@@ -543,11 +548,10 @@ public class MazeManager : MonoBehaviour
                     break;
             }
 
-            yield return new WaitForSeconds(timer);
+            yield return new WaitForSeconds(timerRails);
         }
 
         StartCoroutine(CreateBiome());
-        
     }
 
     private void CreatePlayer()
@@ -566,14 +570,13 @@ public class MazeManager : MonoBehaviour
             Quaternion.LookRotation(direction));
         Player.Init(direction, gameManager);
         cameraController.Initialize(Player.transform);
-        var time = (intersectionsXCount * factorX + intersectionsTCount * factorT + intersectionsLCount * factorL) *
-                   xSize;
+        var time = (30 / (1 + Mathf.Exp(-0.4f * ((xSize / 3) - 2.0f))) - 14.0f) * 60.0f;
         gameManager.SetTimer(time);
-        
+
         meshMergeManagerProps.MergeMeshes();
         meshMergeManagerWalls.MergeMeshes();
         meshMergeManagerFloors.MergeMeshes();
-        
+
         Destroy(propsParent);
         Destroy(wallsParent);
         Destroy(cellsParent);
@@ -604,13 +607,14 @@ public class MazeManager : MonoBehaviour
                             prop.transform.parent = wall.transform;
                             meshMergeManagerProps.meshRenderers.Add(prop.meshRenderer);
                             meshMergeManagerProps.meshFilters.Add(prop.meshFilter);
-                            yield return new WaitForSeconds(timer);
+                            yield return new WaitForSeconds(timerBiome);
                             break;
                         }
                     }
                 }
             }
         }
+
         CreatePlayer();
     }
 

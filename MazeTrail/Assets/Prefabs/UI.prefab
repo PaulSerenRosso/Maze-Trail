@@ -322,7 +322,7 @@ GameObject:
   - component: {fileID: 5460302733377708593}
   - component: {fileID: 4165531047401418667}
   m_Layer: 5
-  m_Name: PlaySame
+  m_Name: RestartButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -428,7 +428,20 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 5460302733377708593}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 8382017397214153789, guid: f38b51e315314414cb92897b8c090051,
+          type: 3}
+        m_TargetAssemblyTypeName: GameManager, Assembly-CSharp
+        m_MethodName: Restart
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &6658109954661948043
 GameObject:
   m_ObjectHideFlags: 0
@@ -575,7 +588,7 @@ GameObject:
   - component: {fileID: 8723650999680215002}
   - component: {fileID: 4189242873619244069}
   m_Layer: 5
-  m_Name: Ending
+  m_Name: ConditionText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -710,7 +723,7 @@ GameObject:
   - component: {fileID: 839371246234994656}
   - component: {fileID: 7878954820021055948}
   m_Layer: 5
-  m_Name: Menu
+  m_Name: ReturnButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -817,7 +830,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 8382017397214153789, guid: f38b51e315314414cb92897b8c090051,
+          type: 3}
         m_TargetAssemblyTypeName: GameManager, Assembly-CSharp
         m_MethodName: ReturnToMenuFromGame
         m_Mode: 1

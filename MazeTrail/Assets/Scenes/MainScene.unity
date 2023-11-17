@@ -160,7 +160,7 @@ Camera:
   m_GameObject: {fileID: 125359907}
   m_Enabled: 1
   serializedVersion: 2
-  m_ClearFlags: 2
+  m_ClearFlags: 1
   m_BackGroundColor: {r: 0, g: 0, b: 0, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
@@ -462,7 +462,11 @@ MonoBehaviour:
   acceleratorPrefab: {fileID: 8233393759906849643, guid: 57b59ae4b395a8947929a5ae6ee41f10,
     type: 3}
   cameraController: {fileID: 125359912}
-  timer: 0.01
+  timerPath: 0.01
+  timerCycle: 0.01
+  timerEntries: 0.01
+  timerRails: 0.01
+  timerBiome: 0.01
   gameManager: {fileID: 2063210220}
   factorL: 0.5
   factorT: 0.5
@@ -1310,15 +1314,15 @@ SceneRoots:
   m_Roots:
   - {fileID: 416875827}
   - {fileID: 1411683762}
+  - {fileID: 1833630469}
   - {fileID: 125359910}
   - {fileID: 1416050318}
   - {fileID: 1109294271}
   - {fileID: 871028639}
   - {fileID: 1095001296}
   - {fileID: 1814878510}
-  - {fileID: 1833630469}
+  - {fileID: 1126755868}
+  - {fileID: 217966507}
   - {fileID: 1575628453}
   - {fileID: 1019210901}
   - {fileID: 1424839478}
-  - {fileID: 1126755868}
-  - {fileID: 217966507}
