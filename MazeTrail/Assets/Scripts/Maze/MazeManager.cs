@@ -35,9 +35,6 @@ public class MazeManager : MonoBehaviour
     [SerializeField] private float timerRails = 0.01f;
     [SerializeField] private float timerBiome = 0.01f;
     [SerializeField] private GameManager gameManager;
-    [SerializeField] private float factorL = 0.5f;
-    [SerializeField] private float factorT = 0.75f;
-    [SerializeField] private float factorX = 1.0f;
     [SerializeField] private Biome[] biomes;
     [SerializeField] private MeshMergeManager meshMergeManagerWalls;
     [SerializeField] private MeshMergeManager meshMergeManagerFloors;
@@ -45,18 +42,12 @@ public class MazeManager : MonoBehaviour
 
     private float cellSize;
     private int totalCells;
-    private int intersectionsLCount;
-    private int intersectionsTCount;
-    private int intersectionsXCount;
 
     public void GenerateMaze(int size = 10)
     {
         xSize = size;
         ySize = size;
         maxLoopSize = size / 2;
-        intersectionsLCount = 0;
-        intersectionsTCount = 0;
-        intersectionsXCount = 0;
         cellSize = cellPrefab.floor.transform.localScale.x;
         totalCells = xSize * ySize;
         cameraController.transform.position =
@@ -157,7 +148,7 @@ public class MazeManager : MonoBehaviour
 
         if (cell.DynamicNeighbours.Count == 0 && recursivePathCells.Count != 0)
         {
-            // cell.floorMR.material.color = Color.blue;
+            cell.floorMR.material.color = Color.blue;
             RemoveDynamicNeighbourFromStaticNeighbour(cell);
             var previousCell = recursivePathCells[^1];
             recursivePathCells.RemoveAt(recursivePathCells.Count - 1);
@@ -178,7 +169,7 @@ public class MazeManager : MonoBehaviour
 
     private IEnumerator CreatePath(CellMaze cell)
     {
-        // cell.floorMR.material.color = Color.white;
+        cell.floorMR.material.color = Color.red;
         var neighbourCellTuple = cell.DynamicNeighbours[Random.Range(0, cell.DynamicNeighbours.Count)];
         Destroy(cell.walls[neighbourCellTuple.direction].gameObject);
         meshMergeManagerWalls.meshFilters.Remove(cell.walls[neighbourCellTuple.direction].meshFilter);
@@ -432,7 +423,6 @@ public class MazeManager : MonoBehaviour
                     break;
 
                 case RailShape.ShapeL:
-                    intersectionsLCount++;
                     var directions = new List<Direction>();
                     intersection = Instantiate(intersectionPrefab, cell.transform.position, Quaternion.identity,
                         rail.transform);
@@ -475,7 +465,6 @@ public class MazeManager : MonoBehaviour
                     break;
 
                 case RailShape.ShapeT:
-                    intersectionsTCount++;
                     intersection = Instantiate(intersectionPrefab, cell.transform.position, Quaternion.identity,
                         rail.transform);
                     foreach (var wall in cell.walls)
@@ -523,13 +512,13 @@ public class MazeManager : MonoBehaviour
                             switch (wall.Key)
                             {
                                 case Direction.Right:
-                                    rail.transform.Rotate(Vector3.up, 90);
+                                    rail.transform.Rotate(Vector3.up, -90);
                                     break;
-                                case Direction.Bottom:
+                                case Direction.Top:
                                     rail.transform.Rotate(Vector3.up, 180);
                                     break;
                                 case Direction.Left:
-                                    rail.transform.Rotate(Vector3.up, -90);
+                                    rail.transform.Rotate(Vector3.up, 90);
                                     break;
                             }
                         }
@@ -538,7 +527,6 @@ public class MazeManager : MonoBehaviour
                     break;
 
                 case RailShape.ShapeX:
-                    intersectionsXCount++;
                     intersection = Instantiate(intersectionPrefab, cell.transform.position, Quaternion.identity,
                         rail.transform);
                     intersection.availableDirections.Add(Direction.Right);

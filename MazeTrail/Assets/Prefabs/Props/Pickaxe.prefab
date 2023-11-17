@@ -9,6 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8983660550424173827}
+  - component: {fileID: -1861108706112775003}
   m_Layer: 0
   m_Name: Pickaxe
   m_TagString: Untagged
@@ -32,6 +33,20 @@ Transform:
   - {fileID: 298475077643982998}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &-1861108706112775003
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7493956872044818425}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6c69320f17ba4f5abbb5c41838e21eae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  meshRenderer: {fileID: 298475077645884022}
+  meshFilter: {fileID: 298475077646850230}
 --- !u!1001 &796520081165228631
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -103,6 +118,18 @@ PrefabInstance:
 --- !u!4 &298475077643982998 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1092592724820312769, guid: 70a5f67076bd8da4faf9d9258e2f22d5,
+    type: 3}
+  m_PrefabInstance: {fileID: 796520081165228631}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &298475077645884022 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 1092592724822081569, guid: 70a5f67076bd8da4faf9d9258e2f22d5,
+    type: 3}
+  m_PrefabInstance: {fileID: 796520081165228631}
+  m_PrefabAsset: {fileID: 0}
+--- !u!33 &298475077646850230 stripped
+MeshFilter:
+  m_CorrespondingSourceObject: {fileID: 1092592724821082849, guid: 70a5f67076bd8da4faf9d9258e2f22d5,
     type: 3}
   m_PrefabInstance: {fileID: 796520081165228631}
   m_PrefabAsset: {fileID: 0}

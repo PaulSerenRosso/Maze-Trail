@@ -468,9 +468,6 @@ MonoBehaviour:
   timerRails: 0.01
   timerBiome: 0.01
   gameManager: {fileID: 2063210220}
-  factorL: 0.5
-  factorT: 0.5
-  factorX: 0.5
   biomes:
   - prefabs:
     - {fileID: 5768651397161991073, guid: f699194b20f514f419d4a99a4af55439, type: 3}
@@ -492,9 +489,9 @@ MonoBehaviour:
     - {fileID: -2923867983750876871, guid: fbb2546818d5c434f89240db4e3e42e3, type: 3}
   - prefabs:
     - {fileID: 7011233385557656959, guid: 5dca2abaa2b21ec4a9a85ffc4fc31f60, type: 3}
-    - {fileID: -3741907169505914247, guid: 70a5f67076bd8da4faf9d9258e2f22d5, type: 3}
+    - {fileID: -1861108706112775003, guid: 7b0a145fce9d6354f850495a952dd7f9, type: 3}
   - prefabs:
-    - {fileID: -3741907169505914247, guid: 70a5f67076bd8da4faf9d9258e2f22d5, type: 3}
+    - {fileID: -1861108706112775003, guid: 7b0a145fce9d6354f850495a952dd7f9, type: 3}
     - {fileID: -2702736662597017956, guid: f48cd2301615cf149ac9db757e0763fa, type: 3}
   - prefabs:
     - {fileID: -1586382444242955474, guid: 1b7ecca8d564cf148a2c52d618655e5b, type: 3}
