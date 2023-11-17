@@ -14,7 +14,7 @@ public class MainMenuManager : MonoBehaviour
     private void Awake()
     {
         currentMenu = mainMenu;
-        SetMazeSize(9.0f);
+        SetMazeSize(3.0f);
     }
 
     public void SetMazeSize(float value)

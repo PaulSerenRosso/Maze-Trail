@@ -35,9 +35,6 @@ public class MazeManager : MonoBehaviour
     [SerializeField] private float timerRails = 0.01f;
     [SerializeField] private float timerBiome = 0.01f;
     [SerializeField] private GameManager gameManager;
-    [SerializeField] private float factorL = 0.5f;
-    [SerializeField] private float factorT = 0.75f;
-    [SerializeField] private float factorX = 1.0f;
     [SerializeField] private Biome[] biomes;
     [SerializeField] private MeshMergeManager meshMergeManagerWalls;
     [SerializeField] private MeshMergeManager meshMergeManagerFloors;
@@ -45,18 +42,12 @@ public class MazeManager : MonoBehaviour
 
     private float cellSize;
     private int totalCells;
-    private int intersectionsLCount;
-    private int intersectionsTCount;
-    private int intersectionsXCount;
 
     public void GenerateMaze(int size = 10)
     {
         xSize = size;
         ySize = size;
         maxLoopSize = size / 2;
-        intersectionsLCount = 0;
-        intersectionsTCount = 0;
-        intersectionsXCount = 0;
         cellSize = cellPrefab.floor.transform.localScale.x;
         totalCells = xSize * ySize;
         cameraController.transform.position =
@@ -432,7 +423,6 @@ public class MazeManager : MonoBehaviour
                     break;
 
                 case RailShape.ShapeL:
-                    intersectionsLCount++;
                     var directions = new List<Direction>();
                     intersection = Instantiate(intersectionPrefab, cell.transform.position, Quaternion.identity,
                         rail.transform);
@@ -475,7 +465,6 @@ public class MazeManager : MonoBehaviour
                     break;
 
                 case RailShape.ShapeT:
-                    intersectionsTCount++;
                     intersection = Instantiate(intersectionPrefab, cell.transform.position, Quaternion.identity,
                         rail.transform);
                     foreach (var wall in cell.walls)
@@ -538,7 +527,6 @@ public class MazeManager : MonoBehaviour
                     break;
 
                 case RailShape.ShapeX:
-                    intersectionsXCount++;
                     intersection = Instantiate(intersectionPrefab, cell.transform.position, Quaternion.identity,
                         rail.transform);
                     intersection.availableDirections.Add(Direction.Right);

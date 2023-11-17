@@ -13,7 +13,6 @@ GameObject:
   - component: {fileID: 2377430}
   - component: {fileID: 64131539090467150}
   - component: {fileID: 64549038553417514}
-  - component: {fileID: -5163454576519487178}
   m_Layer: 0
   m_Name: SM_Bld_Village_03
   m_TagString: Untagged
@@ -130,17 +129,3 @@ MeshCollider:
   m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: 43063347274274954, guid: 03898883458b52a498288743b35709f4, type: 2}
---- !u!114 &-5163454576519487178
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 150162}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6c69320f17ba4f5abbb5c41838e21eae, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  meshRenderer: {fileID: 2377430}
-  meshFilter: {fileID: 3342648}
