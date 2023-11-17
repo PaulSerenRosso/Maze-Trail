@@ -348,13 +348,13 @@ public class MazeManager : MonoBehaviour
         if (isExit)
         {
             var exit = Instantiate(exitPrefab, cells[^2].transform.position, Quaternion.LookRotation(-directionToLook),
-                cells[^2].transform);
+                railsParent.transform);
             exit.Initialize(gameManager);
         }
         else
         {
             Instantiate(entryPrefab, cells[^2].transform.position, Quaternion.LookRotation(directionToLook),
-                cells[^2].transform);
+                railsParent.transform);
         }
     }
 
@@ -544,7 +544,7 @@ public class MazeManager : MonoBehaviour
 
     private void CreatePlayer()
     {
-        var midCell = cells[Mathf.FloorToInt((totalCells - 12) / 2)];
+        var midCell = cells[Mathf.FloorToInt((totalCells - 12 + (xSize / 2)) / 2)];
         CellMaze neighbourCell = null;
         foreach (var wall in midCell.walls)
         {
