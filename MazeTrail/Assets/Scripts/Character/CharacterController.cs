@@ -1,5 +1,4 @@
 using System;
-using Unity.VisualScripting;
 using UnityEngine;
 using Vector3 = UnityEngine.Vector3;
 
@@ -9,21 +8,15 @@ public class CharacterController : MonoBehaviour
     [SerializeField] private float maxSpeed;
     [SerializeField] private float acceleratorMaxFactor = 1.0f;
     [SerializeField] private float breakForce;
-    
-    private float maxSpeedAccelerated;
-    
     [SerializeField] private Transform directionIndicator;
-    
+
+    private float maxSpeedAccelerated;
     private Rigidbody rb;
     private Vector3 direction = Vector3.forward;
-
     private Direction nextDirection = Direction.Top;
-    
     private bool accelerated;
     private bool lockControls;
-   
     private Intersection nextIntersection;
-    
     private PlayerInput inputSystem;
     private GameManager gameManager;
 
@@ -46,9 +39,13 @@ public class CharacterController : MonoBehaviour
         gameManager = manager;
     }
 
-    void Update()
+    private void Update()
     {
         GetInput();
+    }
+
+    void FixedUpdate()
+    {
         HandleIntersection();
         MovePlayer();
     }
@@ -81,13 +78,13 @@ public class CharacterController : MonoBehaviour
         {
             nextDirection = DirectionLogic.RelativeToAbsoluteDirection(relativeDirection, Direction.Left);
             RotateIndicator(Direction.Left);
-        } 
+        }
         else if (inputSystem.Player.TurnRight.triggered)
         {
             nextDirection = DirectionLogic.RelativeToAbsoluteDirection(relativeDirection, Direction.Right);
             RotateIndicator(Direction.Right);
         }
-        
+
         //Reverse
         if (inputSystem.Player.TurnAround.triggered)
         {
@@ -100,7 +97,7 @@ public class CharacterController : MonoBehaviour
     private void MovePlayer()
     {
         if (transform.forward != direction) transform.forward = direction;
-        
+
         //If speed is opposite to forward, set it to 0
         if (rb.velocity.normalized == -direction.normalized)
             rb.velocity = Vector3.zero;
@@ -118,7 +115,7 @@ public class CharacterController : MonoBehaviour
         }
 
         var contextMaxSpeed = (accelerated ? maxSpeedAccelerated : maxSpeed);
-        
+
         if (rb.velocity.magnitude > contextMaxSpeed)
             rb.velocity = rb.velocity.normalized * contextMaxSpeed;
     }
@@ -126,36 +123,38 @@ public class CharacterController : MonoBehaviour
     private void HandleIntersection()
     {
         if (!nextIntersection) return;
-        
+
         var intersectionPos = nextIntersection.transform.position;
 
         //Check only on a single axis to prevent "dodging" the intersection
         if (direction.x != 0)
-            if((intersectionPos.x - transform.position.x) > .05f) return;
-        else
-            if((intersectionPos.y - transform.position.y) > .05f) return;
-        
+            if ((intersectionPos.x - transform.position.x) > .05f) return;
+            else if ((intersectionPos.y - transform.position.y) > .05f) return;
+
+        // if ((intersectionPos - transform.position).magnitude > .1f)
+        // return;
+
+        var oldDir = direction;
+
         if (nextIntersection.MatchDirection(nextDirection) && nextDirection !=
             DirectionLogic.GetOpposite(DirectionLogic.GetRelativeDirection(direction)))
         {
-            var oldDir = direction;
-            
             GetNextDirection(nextDirection);
-            
-            if(oldDir != direction)
-                transform.position = new Vector3(intersectionPos.x, transform.position.y, intersectionPos.z);
-            
-            rb.velocity = rb.velocity.magnitude * direction;
-            RotateIndicator(Direction.Top);
-           
-            nextIntersection = null;
         }
-        else 
+        else
         {
             gameManager.EndGame(false);
         }
+
+        if (oldDir != direction)
+            transform.position = new Vector3(intersectionPos.x, transform.position.y, intersectionPos.z);
+
+        rb.velocity = rb.velocity.magnitude * direction;
+        RotateIndicator(Direction.Top);
+
+        nextIntersection = null;
     }
-    
+
     private void GetNextDirection(Direction nextDirection)
     {
         switch (nextDirection)
@@ -182,13 +181,16 @@ public class CharacterController : MonoBehaviour
         switch (direction)
         {
             case Direction.Left:
-                directionIndicator.rotation = Quaternion.Euler(new Vector3(-45.0f, directionIndicator.eulerAngles.y, directionIndicator.eulerAngles.z));
+                directionIndicator.rotation = Quaternion.Euler(new Vector3(-45.0f, directionIndicator.eulerAngles.y,
+                    directionIndicator.eulerAngles.z));
                 break;
             case Direction.Right:
-                directionIndicator.rotation = Quaternion.Euler(new Vector3(45.0f, directionIndicator.eulerAngles.y, directionIndicator.eulerAngles.z));
+                directionIndicator.rotation = Quaternion.Euler(new Vector3(45.0f, directionIndicator.eulerAngles.y,
+                    directionIndicator.eulerAngles.z));
                 break;
             default:
-                directionIndicator.rotation = Quaternion.Euler(new Vector3(0.0f, directionIndicator.eulerAngles.y, directionIndicator.eulerAngles.z));
+                directionIndicator.rotation = Quaternion.Euler(new Vector3(0.0f, directionIndicator.eulerAngles.y,
+                    directionIndicator.eulerAngles.z));
                 break;
         }
     }
@@ -208,7 +210,7 @@ public class CharacterController : MonoBehaviour
 
     private void OnTriggerExit(Collider other)
     {
-        if(nextIntersection)
+        if (nextIntersection)
             nextIntersection = null;
     }
 }
